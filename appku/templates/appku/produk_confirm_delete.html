@@ -1,0 +1,29 @@
+﻿{% extends 'appku/base.html' %}
+{% block title %}Hapus Produk | Nusantara Tech{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header fade-up">
+            <div>
+                <div class="eyebrow">Hapus Produk</div>
+                <h1>Konfirmasi Hapus</h1>
+            </div>
+            <a href="{% url 'produk_list' %}" class="btn btn-secondary">Batal</a>
+        </div>
+
+        <div class="form-card fade-up delay-1">
+            <div class="produk-info">
+                <h3>{{ produk.nama }}</h3>
+                <p>Rp {{ produk.harga }}</p>
+            </div>
+            <p>Yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="actions" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                </form>
+                <a href="{% url 'produk_list' %}" class="btn btn-secondary">Batal</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

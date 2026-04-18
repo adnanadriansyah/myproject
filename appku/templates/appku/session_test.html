@@ -1,0 +1,75 @@
+﻿{% extends 'appku/base.html' %}
+{% block title %}Session Demo | Nusantara Tech{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="card fade-up">
+            <h1>Demo Session</h1>
+            <p>Masukkan nama untuk disimpan ke dalam session. Data akan tampil tanpa reload saat menggunakan AJAX.</p>
+            <form id="session-form" method="post" action="">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="nama">Nama:</label>
+                    <input type="text" id="nama" name="nama" placeholder="Masukkan namamu" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="button button-primary">Simpan Session</button>
+                </div>
+                <div id="session-status" class="form-status">Tekan tombol untuk menyimpan nama di session.</div>
+            </form>
+
+            <div class="session-card fade-up delay-1" style="margin-top: 2rem;">
+                {% if nama_session %}
+                    <p>Nama saat ini tersimpan di session: <strong>{{ nama_session }}</strong>.</p>
+                {% else %}
+                    <p>Belum ada nama yang tersimpan di session. Isi form untuk memulai.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('session-form');
+            const statusBox = document.getElementById('session-status');
+            const sessionCard = document.querySelector('.session-card');
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                const token = formData.get('csrfmiddlewaretoken');
+                const nama = formData.get('nama').trim();
+
+                if (!nama) {
+                    statusBox.className = 'form-status message-error';
+                    statusBox.textContent = 'Nama tidak boleh kosong.';
+                    return;
+                }
+
+                statusBox.className = 'form-status';
+                statusBox.textContent = 'Menyimpan session...';
+
+                try {
+                    const response = await fetch(form.action || window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': token,
+                        },
+                        body: formData,
+                    });
+                    const data = await response.json();
+
+                    statusBox.className = 'form-status message-success';
+                    statusBox.textContent = 'Session berhasil disimpan. Nama: ' + data.nama;
+                    sessionCard.innerHTML = `<p>Nama saat ini tersimpan di session: <strong>${data.nama}</strong>.</p>`;
+                } catch (error) {
+                    statusBox.className = 'form-status message-error';
+                    statusBox.textContent = 'Gagal menyimpan session. Coba lagi.';
+                }
+            });
+        });
+    </script>
+{% endblock %}

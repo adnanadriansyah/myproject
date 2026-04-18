@@ -1,0 +1,43 @@
+{% extends 'appku/base.html' %}
+{% block title %}Edit Produk | Nusantara Tech{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header fade-up">
+            <div>
+                <div class="eyebrow">Edit Produk</div>
+                <h1>Edit {{ produk.nama }}</h1>
+            </div>
+            <a href="{% url 'produk_list' %}" class="btn btn-secondary">Kembali ke Daftar</a>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags == 'error' %}message-error{% else %}message-success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="form-card fade-up delay-1">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ form.nama.id_for_label }}">Nama Produk</label>
+                    {{ form.nama }}
+                    {% if form.nama.errors %}
+                        <div class="message message-error">{{ form.nama.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.harga.id_for_label }}">Harga</label>
+                    {{ form.harga }}
+                    {% if form.harga.errors %}
+                        <div class="message message-error">{{ form.harga.errors }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+﻿{% extends 'appku/base.html' %}
+{% block title %}Demo AJAX | Nusantara Tech{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="card fade-up">
+            <h1>Demo AJAX</h1>
+            <p>Silakan tekan tombol untuk memanggil endpoint AJAX yang mengembalikan data JSON. Halaman akan menampilkan respons tanpa memuat ulang.</p>
+            <button id="ajax-btn" class="button button-primary">Load Data dari Server</button>
+            <div id="result" class="result empty" style="margin-top: 1.8rem;">Klik tombol untuk mendapatkan pesan.</div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const button = document.getElementById('ajax-btn');
+            const result = document.getElementById('result');
+
+            button.addEventListener('click', async function () {
+                button.disabled = true;
+                button.textContent = 'Memuat...';
+                result.classList.remove('empty');
+                result.textContent = 'Mengambil data...';
+
+                try {
+                    const response = await fetch('/ajax/', {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    });
+                    const data = await response.json();
+                    result.textContent = data.message || 'Tidak ada respons.';
+                } catch (error) {
+                    result.textContent = 'Gagal memuat data. Coba lagi.';
+                } finally {
+                    button.disabled = false;
+                    button.textContent = 'Load Data dari Server';
+                }
+            });
+        });
+    </script>
+{% endblock %}
