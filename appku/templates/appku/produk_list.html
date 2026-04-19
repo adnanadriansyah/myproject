@@ -1,5 +1,6 @@
-﻿{% extends 'appku/base.html' %}
+{% extends 'appku/base.html' %}
 {% block title %}Daftar Produk | Nusantara Tech{% endblock %}
+{% load humanize %}
 
 {% block content %}
     <div class="container">
@@ -23,7 +24,10 @@
             {% for produk in produk_list %}
                 <div class="produk-card fade-up delay-1">
                     <h3>{{ produk.nama }}</h3>
-                    <p>Rp {{ produk.harga }}</p>
+                    <p class="produk-price">Rp {{ produk.harga|intcomma }}</p>
+                    <div class="produk-meta">
+                        <span>ID: #{{ produk.id }}</span>
+                    </div>
                     <div class="produk-actions">
                         <a href="{% url 'produk_edit' produk.pk %}" class="btn btn-primary">Edit</a>
                         <form method="post" action="{% url 'produk_delete' produk.pk %}" style="display: inline;">

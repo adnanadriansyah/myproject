@@ -1,6 +1,7 @@
 {% extends 'appku/base.html' %}
 {% block title %}Beranda | Nusantara Tech{% endblock %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
     <header>
@@ -50,6 +51,87 @@
             </div>
         </section>
 
+        <!-- Statistics Section -->
+        <section class="section stats-section fade-up">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_produk }}</div>
+                    <div class="stat-label">Total Produk</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ produk_count }}</div>
+                    <div class="stat-label">Produk Anda</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Dukungan</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Session Activity Section (if user has activity) -->
+        {% if last_produk %}
+        <section class="section activity-section fade-up">
+            <div class="section-label">Aktivitas Terbaru</div>
+            <h2>Produk terakhir yang Anda tambahkan</h2>
+            <div class="activity-card">
+                <div class="activity-details">
+                    <h3>{{ last_produk.nama }}</h3>
+                    <p class="activity-price">Rp {{ last_produk.harga|intcomma }}</p>
+                    <span class="badge">Tersimpan di Sesi</span>
+                </div>
+                <div class="activity-actions">
+                    <a href="{% url 'produk_form' %}" class="button button-primary">Tambah Lagi</a>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Featured Products Section -->
+        <section class="section featured-section fade-up">
+            <div class="section-label">Katalog</div>
+            <h2>Produk Terbaru</h2>
+            <p class="intro">Lihat produk-produk terbaru yang telah ditambahkan ke platform kami.</p>
+            
+            <div class="produk-grid featured-grid">
+                {% for produk in produk_terbaru %}
+                <article class="produk-card fade-up delay-{{ forloop.counter|default:1 }}">
+                    <h3>{{ produk.nama }}</h3>
+                    <p class="produk-price">Rp {{ produk.harga|intcomma }}</p>
+                    <div class="produk-meta">
+                        <span>ID: #{{ produk.id }}</span>
+                    </div>
+                    <a href="{% url 'produk_form' %}" class="button button-secondary" style="margin-top: 1rem; width: 100%;">Tambah Produk Baru</a>
+                </article>
+                {% empty %}
+                <div class="empty-state">
+                    <p>Belum ada produk yang ditambahkan.</p>
+                    <a href="{% url 'produk_form' %}" class="button button-primary">Mulai Tambah Produk</a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if user.is_authenticated %}
+        <!-- Quick Actions for Authenticated Users -->
+        <section class="section quick-actions fade-up">
+            <div class="section-label">Menu Cepat</div>
+            <h2>Lanjutkan Aktivitas Anda</h2>
+            <div class="quick-actions-grid">
+                <a href="{% url 'produk_form' %}" class="quick-action-card">
+                    <div class="quick-action-icon">+</div>
+                    <h3>Tambah Produk</h3>
+                    <p>Tambahkan produk baru ke katalog</p>
+                </a>
+                <a href="{% url 'produk_list' %}" class="quick-action-card">
+                    <div class="quick-action-icon">📦</div>
+                    <h3>Kelola Produk</h3>
+                    <p>Lihat dan edit semua produk Anda</p>
+                </a>
+            </div>
+        </section>
+        {% endif %}
+
         <section class="section">
             <div class="cta-card fade-up" style="background: linear-gradient(135deg, var(--accent-light), rgba(37, 99, 235, 0.08)); border: 2px solid var(--accent); border-radius: 32px; padding: 3rem 2rem; text-align: center;">
                 <h2 style="margin-top: 0; color: var(--accent);">Siap untuk memulai?</h2>
@@ -61,7 +143,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 Nusantara Tech. Semua hak dilindungi.</p>
+            <p>&copy; 2026 Nusantara Tech. Semua hak dilindungi.</p>
         </div>
     </footer>
 {% endblock %}

@@ -337,6 +337,25 @@
         .card h3 {
             margin-top: 0;
         }
+        .produk-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 0.8rem 0;
+        }
+        .produk-meta {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        .produk-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+        }
+        .produk-actions .btn {
+            flex: 1;
+        }
         .intro {
             color: var(--text-muted);
             margin-top: 1rem;
@@ -384,6 +403,39 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.4rem;
+        }
+        .produk-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 2rem;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3), 0 0 1px rgba(59, 130, 246, 0.1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .produk-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border-color: rgba(59, 130, 246, 0.32);
+        }
+        .produk-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 0.8rem 0;
+        }
+        .produk-meta {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        .produk-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+        }
+        .produk-actions .btn {
+            flex: 1;
         }
         .form-status {
             border-radius: 20px;
@@ -478,6 +530,156 @@
             background: rgba(16, 185, 129, 0.15);
             border-color: rgba(16, 185, 129, 0.3);
             color: #6ee7b7;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            margin: 3rem 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .stat-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 30px rgba(59, 130, 246, 0.12);
+        }
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* Activity Section */
+        .activity-section {
+            margin: 3rem 0;
+        }
+        .activity-card {
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 28px;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15);
+            flex-wrap: wrap;
+        }
+        .activity-details h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.6rem;
+        }
+        .activity-price {
+            font-size: 1.3rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin: 0.5rem 0 1rem;
+        }
+        .activity-actions {
+            flex-shrink: 0;
+        }
+
+        /* Featured Section */
+        .featured-section {
+            margin: 3rem 0;
+        }
+        .featured-grid .produk-card {
+            animation-delay: calc(0.3s + var(--card-index, 0) * 0.1s);
+        }
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px dashed var(--border-light);
+            color: var(--text-muted);
+        }
+        .empty-state .button {
+            margin-top: 1rem;
+        }
+
+        /* Quick Actions Section */
+        .quick-actions {
+            margin: 3rem 0;
+        }
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+        .quick-action-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        .quick-action-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(59, 130, 246, 0.15);
+        }
+        .quick-action-icon {
+            font-size: 2.5rem;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            border-radius: 20px;
+            color: white;
+            font-weight: 700;
+        }
+        .quick-action-card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .quick-action-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 900px) {
+            .hero,
+            .feature-grid,
+            .stats-grid,
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+            .activity-card {
+                flex-direction: column;
+                text-align: center;
+            }
         }
         @media (max-width: 900px) {
             .hero,
