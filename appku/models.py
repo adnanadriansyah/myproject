@@ -1,6 +1,92 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
+
+class Kategori(models.Model):
+    nama = models.CharField(max_length=100)
+    deskripsi = models.TextField(blank=True, default="")
+
+    def __str__(self):
+        return self.nama
+
+
+class Supplier(models.Model):
+    nama = models.CharField(max_length=200, default="")
+    kontak = models.CharField(max_length=100, blank=True, default="")
+    alamat = models.TextField(blank=True, default="")
+    telepon = models.CharField(max_length=20, blank=True, default="")
+    email = models.EmailField(blank=True, default="")
+
+    def __str__(self):
+        return self.nama
+
+
+class Pelanggan(models.Model):
+    nama = models.CharField(max_length=200)
+    kontak = models.CharField(max_length=100, blank=True, default="")
+    alamat = models.TextField(blank=True, default="")
+    telepon = models.CharField(max_length=20, blank=True, default="")
+    email = models.EmailField(blank=True, default="")
+
+    def __str__(self):
+        return self.nama
+
+
 class Produk(models.Model):
     nama = models.CharField(max_length=100)
-    harga = models.IntegerField()
+    harga = models.IntegerField(default=0)
+    kategori = models.ForeignKey(
+        Kategori,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="produks",
+    )
+    supplier = models.ForeignKey(
+        Supplier,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="produks",
+    )
+    stok = models.IntegerField(default=0)
+    deskripsi = models.TextField(blank=True, default="")
+
+    def __str__(self):
+        return self.nama
+
+
+class Pesanan(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Menunggu"),
+        ("processing", "Diproses"),
+        ("completed", "Selesai"),
+        ("cancelled", "Dibatalkan"),
+    ]
+
+    pelanggan = models.ForeignKey(
+        Pelanggan, on_delete=models.CASCADE, related_name="pesanans"
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="pesanans"
+    )
+    total_harga = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+
+    def __str__(self):
+        return f"Pesanan #{self.id}"
+
+
+class DetailPesanan(models.Model):
+    pesanan = models.ForeignKey(
+        Pesanan, on_delete=models.CASCADE, related_name="details"
+    )
+    produk = models.ForeignKey(
+        Produk, on_delete=models.CASCADE, related_name="detail_pesanans"
+    )
+    quantity = models.IntegerField(default=1)
+    harga_saat_itu = models.IntegerField(default=0)
+    subtotal = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.pesanan} - {self.produk}"
