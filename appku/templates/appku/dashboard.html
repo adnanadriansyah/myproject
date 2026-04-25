@@ -3,476 +3,693 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Nusantara Tech</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Nusantara Tech</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-        :root {
-            --bg-deep: #030712;
-            --bg-primary: #0a0f1a;
-            --bg-glass: rgba(13, 21, 38, 0.5);
-            --surface: #111d32;
-            --surface-hover: #162543;
-            --accent: #3b82f6;
-            --accent-purple: #8b5cf6;
-            --accent-pink: #ec4899;
-            --accent-orange: #f97316;
-            --accent-cyan: #06b6d4;
-            --accent-green: #10b981;
-            --text: #f1f5f9;
-            --text-muted: #64748b;
-            --border: rgba(59, 130, 246, 0.15);
-            --border-glow: rgba(59, 130, 246, 0.3);
-            --shadow-glow: rgba(59, 130, 246, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.05);
-            --radius-sm: 10px;
-            --radius-md: 14px;
-            --radius-lg: 18px;
-            --radius-xl: 24px;
-        }
+    :root {
+      --nt-dark:   #060b14;
+      --nt-navy:   #0d1a2e;
+      --nt-card:   rgba(17,29,50,.65);
+      --nt-blue:   #2563eb;
+      --nt-indigo: #4f46e5;
+      --nt-cyan:   #06b6d4;
+      --nt-green:  #10b981;
+      --nt-orange: #f97316;
+      --nt-purple: #8b5cf6;
+      --nt-pink:   #ec4899;
+      --nt-border: rgba(255,255,255,.07);
+      --nt-muted:  #64748b;
+      --nt-text:   #f1f5f9;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #060b14;
+      color: var(--nt-text);
+      min-height: 100vh;
+    }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(145deg, var(--bg-deep) 0%, var(--bg-primary) 40%, #0a1628 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            color: var(--text);
-        }
+    /* BG */
+    .bg-ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bg-blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: .12;
+    }
+    .bg-blob-1 { width: 500px; height: 500px; background: var(--nt-blue);   top: -100px; left: -100px; }
+    .bg-blob-2 { width: 400px; height: 400px; background: var(--nt-indigo); bottom: -100px; right: -50px; }
 
-        .dashboard { max-width: 1440px; margin: 0 auto; padding: 1.5rem 2rem; }
+    /* LAYOUT */
+    .dashboard-wrap { position: relative; z-index: 1; }
 
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1rem 0 2rem;
-        }
-        .header-title {
-            font-size: 1.6rem; font-weight: 700;
-            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .header-right { display: flex; align-items: center; gap: 1rem; }
-        .header-link { color: var(--text-muted); font-size: 0.9rem; transition: color 0.3s; }
-        .header-link:hover { color: var(--accent); }
-        .header-avatar {
-            width: 38px; height: 38px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 600; font-size: 0.8rem;
-        }
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: rgba(13,26,46,.8);
+      border-right: 1px solid var(--nt-border);
+      backdrop-filter: blur(20px);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      padding: 1.5rem 1rem;
+      transition: transform .3s;
+      z-index: 200;
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: .6rem;
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.05rem; color: var(--nt-text);
+      margin-bottom: 2rem; padding: 0 .5rem;
+      text-decoration: none;
+    }
+    .sidebar-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--nt-blue);
+      box-shadow: 0 0 8px var(--nt-blue);
+    }
+    .nav-section-label {
+      font-size: .65rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--nt-muted); padding: 0 .5rem;
+      margin: .75rem 0 .4rem;
+    }
+    .sidebar-link {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .5rem .65rem; border-radius: 8px;
+      color: var(--nt-muted) !important; text-decoration: none;
+      font-size: .85rem; font-weight: 500;
+      transition: background .2s, color .2s;
+      margin-bottom: 2px;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+      background: rgba(37,99,235,.12);
+      color: var(--nt-text) !important;
+    }
+    .sidebar-link.active { color: #93c5fd !important; }
+    .sidebar-link svg { flex-shrink: 0; }
+    .sidebar-footer {
+      margin-top: auto;
+      border-top: 1px solid var(--nt-border);
+      padding-top: 1rem;
+    }
+    .user-chip {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .5rem;
+    }
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .7rem; flex-shrink: 0;
+    }
+    .user-name { font-size: .82rem; font-weight: 500; }
+    .user-role { font-size: .7rem; color: var(--nt-muted); }
 
-        .messages { margin-bottom: 1.25rem; }
-        .message {
-            padding: 0.85rem 1rem; border-radius: var(--radius-md); margin-bottom: 0.6rem;
-            font-size: 0.85rem;
-        }
-        .message-error { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); color: #fca5a5; }
-        .message-success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25); color: #6ee7b7; }
+    /* MAIN */
+    .main-content {
+      margin-left: 220px;
+      padding: 1.75rem 2rem;
+      min-height: 100vh;
+      animation: fadeIn .5s ease both;
+    }
+    @keyframes fadeIn { from { opacity:0; } }
 
-        .stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat-card {
-            background: var(--bg-glass); backdrop-filter: blur(16px);
-            border-radius: var(--radius-lg); padding: 1.25rem;
-            border: 1px solid var(--glass-border);
-            transition: all 0.3s;
-        }
-        .stat-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-        }
-        .stat-card:nth-child(1)::before { background: var(--accent); }
-        .stat-card:nth-child(2)::before { background: var(--accent-purple); }
-        .stat-card:nth-child(3)::before { background: var(--accent-cyan); }
-        .stat-card:nth-child(4)::before { background: var(--accent-green); }
-        .stat-card:nth-child(5)::before { background: var(--accent-orange); }
-        .stat-card:nth-child(6)::before { background: var(--accent-pink); }
+    /* TOPBAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem; font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .topbar-right { display: flex; align-items: center; gap: .75rem; }
+    .btn-topbar {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .45rem .9rem; border-radius: 8px; border: none;
+      background: rgba(255,255,255,.06); border: 1px solid var(--nt-border);
+      color: var(--nt-muted); font-size: .78rem; cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+    .btn-topbar:hover { background: rgba(255,255,255,.1); color: var(--nt-text); }
 
-        .stat-value { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.2rem; }
-        .stat-card:nth-child(1) .stat-value { color: var(--accent); }
-        .stat-card:nth-child(2) .stat-value { color: var(--accent-purple); }
-        .stat-card:nth-child(3) .stat-value { color: var(--accent-cyan); }
-        .stat-card:nth-child(4) .stat-value { color: var(--accent-green); }
-        .stat-card:nth-child(5) .stat-value { color: var(--accent-orange); }
-        .stat-card:nth-child(6) .stat-value { color: var(--accent-pink); }
-        .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    /* ALERTS */
+    .alert-nt {
+      border-radius: 10px; padding: .75rem 1rem;
+      font-size: .83rem; display: flex; align-items: center; gap: .5rem;
+      margin-bottom: .6rem;
+    }
+    .alert-error   { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; }
+    .alert-success { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); color: #6ee7b7; }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
-        .panel {
-            background: var(--bg-glass); backdrop-filter: blur(16px);
-            border-radius: var(--radius-lg); padding: 1.25rem;
-            border: 1px solid var(--glass-border);
-        }
-        .panel-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 1rem;
-        }
-        .panel-title { font-size: 0.95rem; font-weight: 600; }
-        .panel-btn {
-            padding: 0.4rem 0.75rem; border-radius: var(--radius-sm);
-            background: var(--accent); border: none;
-            color: white; font-size: 0.75rem; font-weight: 600;
-            cursor: pointer;
-        }
+    /* STAT CARDS */
+    .stat-card {
+      background: var(--nt-card);
+      border: 1px solid var(--nt-border);
+      border-radius: 14px; padding: 1.25rem;
+      backdrop-filter: blur(12px);
+      position: relative; overflow: hidden;
+      transition: transform .3s, border-color .3s;
+      animation: slideUp .5s ease both;
+    }
+    .stat-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.12); }
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0;
+    }
+    .stat-card:nth-child(1)::before { background: var(--nt-blue); }
+    .stat-card:nth-child(2)::before { background: var(--nt-purple); }
+    .stat-card:nth-child(3)::before { background: var(--nt-cyan); }
+    .stat-card:nth-child(4)::before { background: var(--nt-green); }
+    .stat-card:nth-child(5)::before { background: var(--nt-orange); }
+    .stat-card:nth-child(6)::before { background: var(--nt-pink); }
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800; margin-bottom: .15rem;
+      letter-spacing: -.03em;
+    }
+    .stat-card:nth-child(1) .stat-val { color: #60a5fa; }
+    .stat-card:nth-child(2) .stat-val { color: #a78bfa; }
+    .stat-card:nth-child(3) .stat-val { color: #67e8f9; }
+    .stat-card:nth-child(4) .stat-val { color: #6ee7b7; }
+    .stat-card:nth-child(5) .stat-val { color: #fdba74; }
+    .stat-card:nth-child(6) .stat-val { color: #f9a8d4; }
+    .stat-lbl {
+      font-size: .7rem; color: var(--nt-muted);
+      text-transform: uppercase; letter-spacing: .06em; font-weight: 500;
+    }
+    .stat-icon {
+      position: absolute; right: 1rem; top: 1.1rem;
+      opacity: .15; font-size: 2rem;
+    }
+    @keyframes slideUp { from { opacity:0; transform: translateY(16px); } }
+    .stat-card:nth-child(1) { animation-delay: .05s; }
+    .stat-card:nth-child(2) { animation-delay: .1s; }
+    .stat-card:nth-child(3) { animation-delay: .15s; }
+    .stat-card:nth-child(4) { animation-delay: .2s; }
+    .stat-card:nth-child(5) { animation-delay: .25s; }
+    .stat-card:nth-child(6) { animation-delay: .3s; }
 
-        .form-row { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
-        .form-input {
-            flex: 1; padding: 0.5rem 0.7rem; border-radius: var(--radius-sm);
-            background: var(--surface); border: 1px solid var(--border);
-            color: var(--text); font-size: 0.8rem;
-        }
-        .form-input:focus { outline: none; border-color: var(--accent); }
-        .form-select {
-            flex: 1; padding: 0.5rem 0.7rem; border-radius: var(--radius-sm);
-            background: var(--surface); border: 1px solid var(--border);
-            color: var(--text); font-size: 0.8rem;
-        }
-        .form-submit {
-            padding: 0.5rem 0.75rem; border-radius: var(--radius-sm);
-            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
-            border: none; color: white; font-size: 0.75rem; font-weight: 600;
-            cursor: pointer;
-        }
+    /* PANELS */
+    .panel {
+      background: var(--nt-card);
+      border: 1px solid var(--nt-border);
+      border-radius: 16px; padding: 1.4rem;
+      backdrop-filter: blur(12px);
+      height: 100%;
+      animation: slideUp .5s ease both .3s;
+    }
+    .panel-title {
+      font-family: 'Syne', sans-serif;
+      font-size: .95rem; font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .section-divider {
+      height: 1px; background: var(--nt-border);
+      margin: 1rem 0;
+    }
 
-        .item-list { display: flex; flex-direction: column; gap: 0.4rem; max-height: 180px; overflow-y: auto; }
-        .item-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0.55rem; border-radius: var(--radius-md);
-            background: var(--surface); border: 1px solid transparent;
-        }
-        .item-row:hover { border-color: var(--border-glow); }
-        .item-info { display: flex; align-items: center; gap: 0.55rem; flex: 1; }
-        .item-avatar {
-            width: 28px; height: 28px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 600; font-size: 0.6rem;
-        }
-        .item-name { font-weight: 500; font-size: 0.8rem; }
-        .item-meta { font-size: 0.7rem; color: var(--text-muted); }
-        .item-delete {
-            padding: 0.25rem 0.45rem; border-radius: var(--radius-sm);
-            background: rgba(239, 68, 68, 0.12); border: none;
-            color: #fca5a5; font-size: 0.65rem; cursor: pointer;
-        }
+    /* FORMS */
+    .form-control, .form-select {
+      background: rgba(255,255,255,.05) !important;
+      border: 1px solid rgba(255,255,255,.09) !important;
+      border-radius: 9px !important;
+      color: var(--nt-text) !important;
+      font-size: .82rem; padding: .5rem .75rem;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .form-control::placeholder { color: var(--nt-muted) !important; }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--nt-blue) !important;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.15) !important;
+      outline: none;
+    }
+    .form-select option { background: #0d1a2e; color: var(--nt-text); }
 
-        .produk-section {
-            background: var(--bg-glass); backdrop-filter: blur(16px);
-            border-radius: var(--radius-lg); padding: 1.25rem;
-            border: 1px solid var(--glass-border);
-        }
-        .produk-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 1rem;
-            flex-wrap: wrap; gap: 0.5rem;
-        }
-        .produk-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 0.75rem;
-        }
-        .produk-card {
-            background: var(--surface); border-radius: var(--radius-md);
-            padding: 0.85rem; border: 1px solid var(--border);
-        }
-        .produk-card:hover { border-color: var(--accent); }
-        .produk-nama { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.3rem; }
-        .produk-harga { color: var(--accent); font-weight: 700; font-size: 0.85rem; }
-        .produk-stok { font-size: 0.7rem; color: var(--text-muted); }
-        .produk-actions { display: flex; gap: 0.4rem; margin-top: 0.55rem; }
-        .btn-edit {
-            flex: 1; padding: 0.3rem; border-radius: var(--radius-sm);
-            background: var(--surface-hover); border: 1px solid var(--border);
-            color: var(--text-muted); font-size: 0.65rem; text-align: center;
-        }
-        .btn-delete {
-            padding: 0.3rem 0.5rem; border-radius: var(--radius-sm);
-            background: rgba(239, 68, 68, 0.12); border: none;
-            color: #fca5a5; font-size: 0.65rem; cursor: pointer;
-        }
+    .btn-add {
+      padding: .5rem .85rem; border-radius: 9px; border: none;
+      background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
+      color: #fff; font-size: .78rem; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+      font-family: 'DM Sans', sans-serif;
+      transition: opacity .2s;
+    }
+    .btn-add:hover { opacity: .85; }
 
-        .empty-state { text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 0.8rem; }
+    /* ITEM LIST */
+    .item-list { display: flex; flex-direction: column; gap: .4rem; max-height: 200px; overflow-y: auto; }
+    .item-list::-webkit-scrollbar { width: 4px; }
+    .item-list::-webkit-scrollbar-track { background: transparent; }
+    .item-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
 
-        @media (max-width: 1200px) { .stats-row { grid-template-columns: repeat(3, 1fr); } .grid-2 { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) {
-            .dashboard { padding: 1rem; }
-            .stats-row { grid-template-columns: 1fr 1fr; }
-            .header { flex-direction: column; gap: 0.75rem; }
-        }
-    </style>
+    .item-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .55rem .65rem; border-radius: 10px;
+      background: rgba(255,255,255,.03); border: 1px solid transparent;
+      transition: border-color .2s;
+    }
+    .item-row:hover { border-color: rgba(37,99,235,.2); }
+    .item-info { display: flex; align-items: center; gap: .55rem; flex: 1; min-width: 0; }
+    .item-av {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
+      display: flex; align-items: center; justify-content: center;
+      font-size: .62rem; font-weight: 700;
+    }
+    .item-name { font-size: .82rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-meta { font-size: .7rem; color: var(--nt-muted); }
+    .btn-del {
+      padding: .25rem .5rem; border-radius: 7px; border: none;
+      background: rgba(239,68,68,.1); color: #fca5a5;
+      font-size: .65rem; cursor: pointer; flex-shrink: 0;
+      transition: background .2s;
+    }
+    .btn-del:hover { background: rgba(239,68,68,.2); }
+
+    /* PRODUK CARDS */
+    .produk-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--nt-border);
+      border-radius: 12px; padding: 1rem;
+      transition: border-color .3s, transform .3s;
+      height: 100%;
+    }
+    .produk-card:hover { border-color: rgba(37,99,235,.3); transform: translateY(-2px); }
+    .produk-nama { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; margin-bottom: .3rem; }
+    .produk-harga { color: #60a5fa; font-weight: 700; font-size: .88rem; margin-bottom: .25rem; }
+    .produk-stok { font-size: .72rem; color: var(--nt-muted); }
+    .produk-actions { display: flex; gap: .4rem; margin-top: .65rem; }
+    .btn-edit-p {
+      flex: 1; padding: .3rem; border-radius: 7px; text-align: center;
+      background: rgba(255,255,255,.05); border: 1px solid var(--nt-border);
+      color: var(--nt-muted); font-size: .68rem; text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+    .btn-edit-p:hover { background: rgba(255,255,255,.09); color: var(--nt-text); }
+
+    .empty-state { text-align: center; padding: 1.5rem; color: var(--nt-muted); font-size: .8rem; }
+
+    /* Mobile sidebar toggle */
+    .sidebar-toggle {
+      display: none; position: fixed; bottom: 1.25rem; right: 1.25rem;
+      z-index: 300; width: 48px; height: 48px; border-radius: 50%;
+      background: var(--nt-blue); border: none; cursor: pointer;
+      align-items: center; justify-content: center;
+      box-shadow: 0 8px 20px rgba(37,99,235,.4);
+    }
+
+    @media (max-width: 991px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 1.25rem 1rem; }
+      .sidebar-toggle { display: flex; }
+    }
+  </style>
 </head>
 <body>
-    <div class="dashboard">
-        <header class="header">
-            <div class="header-title">Dashboard</div>
-            <div class="header-right">
-                <a href="{% url 'home' %}" class="header-link">Beranda</a>
-                <a href="{% url 'logout' %}" class="header-link">Logout</a>
-                <div class="header-avatar">{{ user.username|upper|slice:2 }}</div>
-            </div>
-        </header>
 
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="message message-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                {{ message }}
-            </div>
-            {% endfor %}
+<div class="bg-ambient">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+</div>
+
+<div class="dashboard-wrap d-flex">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a href="{% url 'home' %}" class="sidebar-brand">
+      <span class="sidebar-dot"></span>
+      Nusantara Tech
+    </a>
+
+    <div class="nav-section-label">Utama</div>
+    <a href="{% url 'dashboard' %}" class="sidebar-link active">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="{% url 'produk_list' %}" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Produk
+    </a>
+    <a href="{% url 'home' %}" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Beranda
+    </a>
+
+    <div class="nav-section-label" style="margin-top:1rem;">Kelola</div>
+    <a href="#" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Pelanggan
+    </a>
+    <a href="#" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="22 21 22 15"/><polyline points="19 12 22 15 19 18"/></svg>
+      Supplier
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">{{ user.username|upper|slice:2 }}</div>
+        <div>
+          <div class="user-name">{{ user.username }}</div>
+          <div class="user-role">Administrator</div>
         </div>
-        {% endif %}
-
-        <section class="stats-row">
-            <div class="stat-card">
-                <div class="stat-value">{{ total_produk }}</div>
-                <div class="stat-label">Produk</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ total_kategori }}</div>
-                <div class="stat-label">Kategori</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ total_supplier }}</div>
-                <div class="stat-label">Supplier</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ total_pelanggan }}</div>
-                <div class="stat-label">Pelanggan</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ total_pesanan }}</div>
-                <div class="stat-label">Pesanan</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ total_user }}</div>
-                <div class="stat-label">User</div>
-            </div>
-        </section>
-
-        <div class="grid-2">
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">User & Group</div>
-                </div>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="create_user">
-                    <div class="form-row">
-                        <input type="text" name="username" class="form-input" placeholder="Username" required>
-                        <input type="password" name="password" class="form-input" placeholder="Password" required>
-                    </div>
-                    <div class="form-row">
-                        <select name="groups" class="form-select">
-                            <option value="">Pilih Group</option>
-                            {% for g in group_list %}
-                            <option value="{{ g.id }}">{{ g.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="form-submit">+ User</button>
-                    </div>
-                </form>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="create_group">
-                    <div class="form-row">
-                        <input type="text" name="group_name" class="form-input" placeholder="Nama Group" required>
-                        <button type="submit" class="form-submit">+ Group</button>
-                    </div>
-                </form>
-
-                <div class="panel-header" style="margin-top: 0.75rem;">
-                    <div class="panel-title">Daftar User</div>
-                </div>
-                <div class="item-list">
-                    {% for u in user_list %}
-                    <div class="item-row">
-                        <div class="item-info">
-                            <div class="item-avatar">{{ u.username|upper|slice:2 }}</div>
-                            <div>
-                                <div class="item-name">{{ u.username }}</div>
-                                <div class="item-meta">{% if u.groups.all %}{% for g in u.groups.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Tanpa group{% endif %}</div>
-                            </div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="empty-state">Belum ada user.</div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">Kategori & Supplier</div>
-                </div>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="add_kategori">
-                    <div class="form-row">
-                        <input type="text" name="nama" class="form-input" placeholder="Nama Kategori" required>
-                        <button type="submit" class="form-submit">+ Kat.</button>
-                    </div>
-                </form>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="add_supplier">
-                    <div class="form-row">
-                        <input type="text" name="nama" class="form-input" placeholder="Nama Supplier" required>
-                        <input type="text" name="telepon" class="form-input" placeholder="Telp">
-                    </div>
-                    <div class="form-row">
-                        <input type="email" name="email" class="form-input" placeholder="Email">
-                        <button type="submit" class="form-submit">+ Sup.</button>
-                    </div>
-                </form>
-
-                <div class="panel-header" style="margin-top: 0.75rem;">
-                    <div class="panel-title">Kategori</div>
-                </div>
-                <div class="item-list">
-                    {% for k in kategori_list %}
-                    <div class="item-row">
-                        <div class="item-info">
-                            <div class="item-avatar">📁</div>
-                            <div class="item-name">{{ k.nama }}</div>
-                        </div>
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="delete_kategori">
-                            <input type="hidden" name="kategori_id" value="{{ k.id }}">
-                            <button type="submit" class="item-delete">Hapus</button>
-                        </form>
-                    </div>
-                    {% empty %}
-                    <div class="empty-state">Belum ada kategori.</div>
-                    {% endfor %}
-                </div>
-
-                <div class="panel-header" style="margin-top: 0.5rem;">
-                    <div class="panel-title">Supplier</div>
-                </div>
-                <div class="item-list">
-                    {% for s in supplier_list %}
-                    <div class="item-row">
-                        <div class="item-info">
-                            <div class="item-avatar">🚚</div>
-                            <div>
-                                <div class="item-name">{{ s.nama }}</div>
-                                <div class="item-meta">{{ s.telepon|default:"" }}</div>
-                            </div>
-                        </div>
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="delete_supplier">
-                            <input type="hidden" name="supplier_id" value="{{ s.id }}">
-                            <button type="submit" class="item-delete">Hapus</button>
-                        </form>
-                    </div>
-                    {% empty %}
-                    <div class="empty-state">Belum ada supplier.</div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <div class="grid-2">
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">Pelanggan</div>
-                </div>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="add_pelanggan">
-                    <div class="form-row">
-                        <input type="text" name="nama" class="form-input" placeholder="Nama Pelanggan" required>
-                        <input type="text" name="telepon" class="form-input" placeholder="Telp">
-                    </div>
-                    <div class="form-row">
-                        <input type="email" name="email" class="form-input" placeholder="Email">
-                        <button type="submit" class="form-submit">+ Tambah</button>
-                    </div>
-                </form>
-                
-                <div class="item-list" style="margin-top: 0.75rem;">
-                    {% for p in pelanggan_list %}
-                    <div class="item-row">
-                        <div class="item-info">
-                            <div class="item-avatar">👤</div>
-                            <div>
-                                <div class="item-name">{{ p.nama }}</div>
-                                <div class="item-meta">{{ p.telepon|default:p.email|default:"" }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="empty-state">Belum ada pelanggan.</div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">Tambah Produk</div>
-                </div>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="add_produk">
-                    <div class="form-row">
-                        <input type="text" name="nama" class="form-input" placeholder="Nama Produk" required>
-                        <input type="number" name="harga" class="form-input" placeholder="Harga" required>
-                    </div>
-                    <div class="form-row">
-                        <select name="kategori" class="form-select">
-                            <option value="">Kategori</option>
-                            {% for k in kategori_list %}
-                            <option value="{{ k.id }}">{{ k.nama }}</option>
-                            {% endfor %}
-                        </select>
-                        <select name="supplier" class="form-select">
-                            <option value="">Supplier</option>
-                            {% for s in supplier_list %}
-                            <option value="{{ s.id }}">{{ s.nama }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <input type="number" name="stok" class="form-input" placeholder="Stok" value="0">
-                        <button type="submit" class="form-submit">+ Produk</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <section class="produk-section">
-            <div class="produk-header">
-                <div class="panel-title">Daftar Produk</div>
-            </div>
-            
-            {% if produk_list %}
-            <div class="produk-grid">
-                {% for produk in produk_list %}
-                <div class="produk-card">
-                    <div class="produk-nama">{{ produk.nama }}</div>
-                    <div class="produk-harga">Rp {{ produk.harga|intcomma }}</div>
-                    <div class="produk-stok">Stok: {{ produk.stok }} | {{ produk.kategori|default:"-" }}</div>
-                    <div class="produk-actions">
-                        <a href="{% url 'produk_edit' produk.pk %}" class="btn-edit">Edit</a>
-                        <form method="post" style="flex: 1;">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="delete_produk">
-                            <input type="hidden" name="produk_id" value="{{ produk.id }}">
-                            <button type="submit" class="btn-delete" onclick="return confirm('Hapus?')">Hapus</button>
-                        </form>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state">Belum ada produk.</div>
-            {% endif %}
-        </section>
+      </div>
+      <a href="{% url 'logout' %}" class="sidebar-link mt-1" style="color:#fca5a5!important;">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </a>
     </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content flex-grow-1">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Dashboard</div>
+        <div style="font-size:.78rem;color:var(--nt-muted);margin-top:.15rem;">Selamat datang kembali, {{ user.username }}</div>
+      </div>
+      <div class="topbar-right">
+        <a href="{% url 'home' %}" class="btn-topbar">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Beranda
+        </a>
+        <a href="{% url 'logout' %}" class="btn-topbar" style="color:#fca5a5;border-color:rgba(239,68,68,.2);">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+      <div class="alert-nt {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- STATS -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-val">{{ total_produk }}</div>
+          <div class="stat-lbl">Produk</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card">
+          <div class="stat-icon">📁</div>
+          <div class="stat-val">{{ total_kategori }}</div>
+          <div class="stat-lbl">Kategori</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card">
+          <div class="stat-icon">🚚</div>
+          <div class="stat-val">{{ total_supplier }}</div>
+          <div class="stat-lbl">Supplier</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card">
+          <div class="stat-icon">👤</div>
+          <div class="stat-val">{{ total_pelanggan }}</div>
+          <div class="stat-lbl">Pelanggan</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card">
+          <div class="stat-icon">🛒</div>
+          <div class="stat-val">{{ total_pesanan }}</div>
+          <div class="stat-lbl">Pesanan</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-val">{{ total_user }}</div>
+          <div class="stat-lbl">User</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 1: User & Kategori/Supplier -->
+    <div class="row g-3 mb-3">
+      <!-- User & Group -->
+      <div class="col-lg-6">
+        <div class="panel">
+          <div class="panel-title">User &amp; Group</div>
+
+          <form method="post" class="mb-2">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_user">
+            <div class="d-flex gap-2 mb-2">
+              <input type="text" name="username" class="form-control" placeholder="Username" required>
+              <input type="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+            <div class="d-flex gap-2">
+              <select name="groups" class="form-select">
+                <option value="">Pilih Group</option>
+                {% for g in group_list %}
+                <option value="{{ g.id }}">{{ g.name }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn-add">+ User</button>
+            </div>
+          </form>
+
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_group">
+            <div class="d-flex gap-2">
+              <input type="text" name="group_name" class="form-control" placeholder="Nama Group baru" required>
+              <button type="submit" class="btn-add">+ Group</button>
+            </div>
+          </form>
+
+          <div class="section-divider"></div>
+          <div class="panel-title" style="font-size:.82rem;margin-bottom:.6rem;">Daftar User</div>
+          <div class="item-list">
+            {% for u in user_list %}
+            <div class="item-row">
+              <div class="item-info">
+                <div class="item-av">{{ u.username|upper|slice:2 }}</div>
+                <div style="min-width:0;">
+                  <div class="item-name">{{ u.username }}</div>
+                  <div class="item-meta">{% if u.groups.all %}{% for g in u.groups.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Tanpa group{% endif %}</div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">Belum ada user.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Kategori & Supplier -->
+      <div class="col-lg-6">
+        <div class="panel">
+          <div class="panel-title">Kategori &amp; Supplier</div>
+
+          <form method="post" class="mb-2">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_kategori">
+            <div class="d-flex gap-2">
+              <input type="text" name="nama" class="form-control" placeholder="Nama Kategori" required>
+              <button type="submit" class="btn-add">+ Kategori</button>
+            </div>
+          </form>
+
+          <form method="post" class="mb-2">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_supplier">
+            <div class="d-flex gap-2 mb-2">
+              <input type="text" name="nama" class="form-control" placeholder="Nama Supplier" required>
+              <input type="text" name="telepon" class="form-control" placeholder="Telepon">
+            </div>
+            <div class="d-flex gap-2">
+              <input type="email" name="email" class="form-control" placeholder="Email">
+              <button type="submit" class="btn-add">+ Supplier</button>
+            </div>
+          </form>
+
+          <div class="section-divider"></div>
+          <div class="row g-2">
+            <div class="col-6">
+              <div class="panel-title" style="font-size:.82rem;margin-bottom:.6rem;">Kategori</div>
+              <div class="item-list">
+                {% for k in kategori_list %}
+                <div class="item-row">
+                  <div class="item-info">
+                    <div class="item-av" style="font-size:.9rem;background:rgba(79,70,229,.25);">📁</div>
+                    <div class="item-name">{{ k.nama }}</div>
+                  </div>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_kategori">
+                    <input type="hidden" name="kategori_id" value="{{ k.id }}">
+                    <button type="submit" class="btn-del">Hapus</button>
+                  </form>
+                </div>
+                {% empty %}<div class="empty-state">Kosong</div>{% endfor %}
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="panel-title" style="font-size:.82rem;margin-bottom:.6rem;">Supplier</div>
+              <div class="item-list">
+                {% for s in supplier_list %}
+                <div class="item-row">
+                  <div class="item-info">
+                    <div class="item-av" style="font-size:.9rem;background:rgba(6,182,212,.15);">🚚</div>
+                    <div style="min-width:0;">
+                      <div class="item-name">{{ s.nama }}</div>
+                      <div class="item-meta">{{ s.telepon|default:"" }}</div>
+                    </div>
+                  </div>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_supplier">
+                    <input type="hidden" name="supplier_id" value="{{ s.id }}">
+                    <button type="submit" class="btn-del">Hapus</button>
+                  </form>
+                </div>
+                {% empty %}<div class="empty-state">Kosong</div>{% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Pelanggan & Tambah Produk -->
+    <div class="row g-3 mb-3">
+      <div class="col-lg-6">
+        <div class="panel">
+          <div class="panel-title">Pelanggan</div>
+          <form method="post" class="mb-2">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_pelanggan">
+            <div class="d-flex gap-2 mb-2">
+              <input type="text" name="nama" class="form-control" placeholder="Nama Pelanggan" required>
+              <input type="text" name="telepon" class="form-control" placeholder="Telepon">
+            </div>
+            <div class="d-flex gap-2">
+              <input type="email" name="email" class="form-control" placeholder="Email">
+              <button type="submit" class="btn-add">+ Tambah</button>
+            </div>
+          </form>
+          <div class="section-divider"></div>
+          <div class="item-list">
+            {% for p in pelanggan_list %}
+            <div class="item-row">
+              <div class="item-info">
+                <div class="item-av" style="background:rgba(16,185,129,.2);">👤</div>
+                <div>
+                  <div class="item-name">{{ p.nama }}</div>
+                  <div class="item-meta">{{ p.telepon|default:p.email|default:"" }}</div>
+                </div>
+              </div>
+            </div>
+            {% empty %}<div class="empty-state">Belum ada pelanggan.</div>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="panel">
+          <div class="panel-title">Tambah Produk</div>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_produk">
+            <div class="d-flex gap-2 mb-2">
+              <input type="text" name="nama" class="form-control" placeholder="Nama Produk" required>
+              <input type="number" name="harga" class="form-control" placeholder="Harga (Rp)" required>
+            </div>
+            <div class="d-flex gap-2 mb-2">
+              <select name="kategori" class="form-select">
+                <option value="">Pilih Kategori</option>
+                {% for k in kategori_list %}<option value="{{ k.id }}">{{ k.nama }}</option>{% endfor %}
+              </select>
+              <select name="supplier" class="form-select">
+                <option value="">Pilih Supplier</option>
+                {% for s in supplier_list %}<option value="{{ s.id }}">{{ s.nama }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="d-flex gap-2">
+              <input type="number" name="stok" class="form-control" placeholder="Stok" value="0">
+              <button type="submit" class="btn-add" style="padding:.5rem 1.25rem;">+ Tambah Produk</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUK GRID -->
+    <div class="panel" style="animation-delay:.4s;">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="panel-title" style="margin-bottom:0;">Daftar Produk</div>
+        <span style="font-size:.75rem;color:var(--nt-muted);">{{ total_produk }} produk</span>
+      </div>
+
+      {% if produk_list %}
+      <div class="row g-3">
+        {% for produk in produk_list %}
+        <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+          <div class="produk-card">
+            <div class="produk-nama">{{ produk.nama }}</div>
+            <div class="produk-harga">Rp {{ produk.harga|intcomma }}</div>
+            <div class="produk-stok">Stok: {{ produk.stok }} · {{ produk.kategori|default:"–" }}</div>
+            <div class="produk-actions">
+              <a href="{% url 'produk_edit' produk.pk %}" class="btn-edit-p">Edit</a>
+              <form method="post" style="display:contents;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_produk">
+                <input type="hidden" name="produk_id" value="{{ produk.id }}">
+                <button type="submit" class="btn-del" onclick="return confirm('Hapus produk ini?')" style="border-radius:7px;font-size:.68rem;">Hapus</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state py-4">
+        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="opacity:.3;margin-bottom:.75rem;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <p style="margin:0;">Belum ada produk. Tambahkan produk di atas.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </main>
+</div>
+
+<!-- Sidebar toggle (mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const sidebar = document.getElementById('sidebar');
+  document.getElementById('sidebarToggle').addEventListener('click', () => sidebar.classList.toggle('open'));
+  document.addEventListener('click', e => {
+    if (window.innerWidth < 992 && sidebar.classList.contains('open') && !sidebar.contains(e.target) && !document.getElementById('sidebarToggle').contains(e.target)) {
+      sidebar.classList.remove('open');
+    }
+  });
+</script>
 </body>
 </html>

@@ -4,150 +4,697 @@
 {% load humanize %}
 
 {% block content %}
-    <header>
-        <div class="container nav">
-            <a class="brand" href="/">Nusantara Tech</a>
-            <nav class="nav-links">
-                <a href="#services">Layanan</a>
-                <a href="{% url 'produk_form' %}">Form Produk</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}">Dashboard</a>
-                    <a href="{% url 'produk_list' %}">Produk</a>
-                    <a href="{% url 'logout' %}">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}">Login</a>
-                {% endif %}
-            </nav>
-        </div>
-    </header>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-    <main class="container">
-        <section class="hero fade-up">
-            <div class="hero-content">
-                <h1>Solusi digital yang sederhana, elegan, dan jelas</h1>
-                <p>Kami membantu bisnis Anda berkembang dengan teknologi modern yang mudah digunakan dan dirancang khusus untuk kesuksesan Anda.</p>
-                <div class="hero-actions">
-                    <a class="button button-primary" href="{% url 'produk_form' %}">Mulai Sekarang</a>
-                    <a class="button button-secondary" href="#services">Pelajari Lebih</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80" alt="Team working on modern technology">
-            </div>
-        </section>
+  :root {
+    --nt-dark:   #060b14;
+    --nt-blue:   #2563eb;
+    --nt-indigo: #4f46e5;
+    --nt-cyan:   #06b6d4;
+    --nt-green:  #10b981;
+    --nt-border: rgba(255,255,255,.07);
+    --nt-muted:  #64748b;
+    --nt-text:   #f1f5f9;
+  }
 
-        <section id="services" class="section">
-            <div class="section-label">Layanan</div>
-            <h2 class="fade-up">Apa yang kami tawarkan</h2>
-            <div class="feature-grid" style="margin-top: 2rem;">
-                <article class="card fade-up delay-1">
-                    <h3>Desain Modern</h3>
-                    <p>Antarmuka yang indah dan intuitif yang membuat pengguna Anda merasa nyaman dan produktif setiap hari.</p>
-                </article>
-                <article class="card fade-up delay-2">
-                    <h3>Performa Cepat</h3>
-                    <p>Aplikasi web yang responsif dan cepat dioptimalkan untuk semua perangkat dengan pengalaman pengguna yang sempurna.</p>
-                </article>
-                <article class="card fade-up delay-3">
-                    <h3>Dukungan Profesional</h3>
-                    <p>Tim ahli kami siap membantu Anda mengembangkan, mengintegrasikan, dan memelihara sistem Anda 24/7.</p>
-                </article>
-            </div>
-        </section>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { background: var(--nt-dark); font-family: 'DM Sans', sans-serif; color: var(--nt-text); overflow-x: hidden; margin: 0; }
 
-        <!-- Statistics Section -->
-        <section class="section stats-section fade-up">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">{{ total_produk }}</div>
-                    <div class="stat-label">Total Produk</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ produk_count }}</div>
-                    <div class="stat-label">Produk Anda</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Dukungan</div>
-                </div>
-            </div>
-        </section>
+  /* ── AMBIENT BG ── */
+  .bg-ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .bg-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: .13; }
+  .bg-blob-1 { width: 600px; height: 600px; background: var(--nt-blue);   top: -200px; left: -200px; animation: bmove1 16s ease-in-out infinite alternate; }
+  .bg-blob-2 { width: 500px; height: 500px; background: var(--nt-indigo); bottom: -100px; right: -100px; animation: bmove2 18s ease-in-out infinite alternate; }
+  .bg-blob-3 { width: 350px; height: 350px; background: var(--nt-cyan);   top: 40%; left: 55%; animation: bmove1 22s ease-in-out infinite alternate-reverse; }
+  @keyframes bmove1 { to { transform: translate(80px, 60px) scale(1.15); } }
+  @keyframes bmove2 { to { transform: translate(-60px, -40px) scale(1.1); } }
 
-        <!-- Session Activity Section (if user has activity) -->
-        {% if last_produk %}
-        <section class="section activity-section fade-up">
-            <div class="section-label">Aktivitas Terbaru</div>
-            <h2>Produk terakhir yang Anda tambahkan</h2>
-            <div class="activity-card">
-                <div class="activity-details">
-                    <h3>{{ last_produk.nama }}</h3>
-                    <p class="activity-price">Rp {{ last_produk.harga|intcomma }}</p>
-                    <span class="badge">Tersimpan di Sesi</span>
-                </div>
-                <div class="activity-actions">
-                    <a href="{% url 'produk_form' %}" class="button button-primary">Tambah Lagi</a>
-                </div>
-            </div>
-        </section>
-        {% endif %}
+  .page { position: relative; z-index: 1; }
 
-        <!-- Featured Products Section -->
-        <section class="section featured-section fade-up">
-            <div class="section-label">Katalog</div>
-            <h2>Produk Terbaru</h2>
-            <p class="intro">Lihat produk-produk terbaru yang telah ditambahkan ke platform kami.</p>
-            
-            <div class="produk-grid featured-grid">
-                {% for produk in produk_terbaru %}
-                <article class="produk-card fade-up delay-{{ forloop.counter|default:1 }}">
-                    <h3>{{ produk.nama }}</h3>
-                    <p class="produk-price">Rp {{ produk.harga|intcomma }}</p>
-                    <div class="produk-meta">
-                        <span>ID: #{{ produk.id }}</span>
-                    </div>
-                    <a href="{% url 'produk_form' %}" class="button button-secondary" style="margin-top: 1rem; width: 100%;">Tambah Produk Baru</a>
-                </article>
-                {% empty %}
-                <div class="empty-state">
-                    <p>Belum ada produk yang ditambahkan.</p>
-                    <a href="{% url 'produk_form' %}" class="button button-primary">Mulai Tambah Produk</a>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
+  /* ── NAVBAR ── */
+  .nt-nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(24px);
+    background: rgba(6,11,20,.75);
+    border-bottom: 1px solid var(--nt-border);
+    animation: fadeDown .5s ease both;
+  }
+  .nt-nav .container { display: flex; align-items: center; justify-content: space-between; padding-top: .9rem; padding-bottom: .9rem; }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } }
 
+  .nav-brand {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
+    color: var(--nt-text) !important; text-decoration: none;
+    letter-spacing: -.02em; display: flex; align-items: center; gap: .55rem;
+  }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nt-blue); box-shadow: 0 0 8px var(--nt-blue); }
+
+  .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-links a { color: var(--nt-muted) !important; text-decoration: none; font-size: .875rem; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--nt-text) !important; }
+  .nav-links .nav-cta { background: var(--nt-blue); color: #fff !important; padding: .4rem 1.1rem; border-radius: 8px; font-size: .82rem; transition: opacity .2s; }
+  .nav-links .nav-cta:hover { opacity: .85; }
+
+  .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: .3rem; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--nt-text); border-radius: 2px; transition: all .3s; }
+
+  /* ── BUTTONS ── */
+  .btn-primary-nt {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .72rem 1.65rem; border-radius: 10px; border: none;
+    background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
+    color: #fff !important; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: .9rem; text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .btn-primary-nt:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,99,235,.45); }
+
+  .btn-outline-nt {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .72rem 1.65rem; border-radius: 10px;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.13);
+    color: var(--nt-text) !important; font-weight: 500; font-size: .9rem;
+    text-decoration: none; transition: background .2s, border-color .2s;
+  }
+  .btn-outline-nt:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.22); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 6rem 0 5rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.6s ease both 0.34s;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    background: rgba(37, 99, 235, 0.1);
+    border: 1px solid rgba(37, 99, 235, 0.28);
+    border-radius: 20px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #93c5fd;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease both 0.1s;
+  }
+
+  .hero-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--nt-blue);
+  }
+
+  .hero-heading {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+    animation: fadeUp 0.6s ease both 0.18s;
+  }
+
+  .hero-heading .highlight {
+    background: linear-gradient(135deg, var(--nt-blue), var(--nt-cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--nt-muted);
+    line-height: 1.75;
+    max-width: 500px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both 0.26s;
+  }
+
+  .hero-img-wrap {
+    position: relative;
+    animation: fadeUp 0.7s ease both 0.3s;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero-img-wrap img {
+    width: 100%;
+    border-radius: 20px;
+    object-fit: cover;
+    border: 1px solid var(--nt-border);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    display: block;
+    max-width: 480px;
+  }
+
+  .hero-float-badge {
+    position: absolute;
+    bottom: -18px;
+    left: -18px;
+    background: rgba(9, 20, 40, 0.92);
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    white-space: nowrap;
+  }
+
+  .float-badge-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--nt-blue), var(--nt-cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .float-badge-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .float-badge-sub {
+    font-size: 0.68rem;
+    color: var(--nt-muted);
+    display: block;
+    margin-top: 1px;
+  }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+
+  /* ── STATS BAR ── */
+  .stats-bar { padding: 2.5rem 0; border-top: 1px solid var(--nt-border); border-bottom: 1px solid var(--nt-border); }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--nt-text), #93c5fd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-lbl {
+    font-size: 0.78rem;
+    color: var(--nt-muted);
+    margin-top: 0.3rem;
+  }
+
+  .stat-divider {
+    border-left: 1px solid var(--nt-border);
+    border-right: 1px solid var(--nt-border);
+  }
+
+  /* ── SECTION COMMON ── */
+  .section-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #93c5fd;
+    margin-bottom: 0.6rem;
+  }
+
+  .section-heading {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.3rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.65rem;
+  }
+
+  .section-sub {
+    font-size: 0.9rem;
+    color: var(--nt-muted);
+    line-height: 1.7;
+  }
+
+  /* ── SERVICE CARDS ── */
+  .service-card {
+    background: rgba(17,29,50,.65); border: 1px solid var(--nt-border);
+    border-radius: 16px; padding: 1.75rem;
+    height: 100%; transition: border-color .3s, transform .3s;
+  }
+  .service-card:hover { border-color: rgba(37,99,235,.4); transform: translateY(-4px); }
+  .svc-icon {
+    width: 46px; height: 46px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem;
+  }
+  .svc-blue  { background: rgba(37,99,235,.15); }
+  .svc-cyan  { background: rgba(6,182,212,.15); }
+  .svc-green { background: rgba(16,185,129,.15); }
+  .svc-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: .55rem; }
+  .svc-desc  { font-size: .875rem; color: var(--nt-muted); line-height: 1.7; margin: 0; }
+
+  /* ── ACTIVITY ── */
+  .activity-wrap {
+    background: rgba(17,29,50,.65); border: 1px solid rgba(37,99,235,.22);
+    border-radius: 16px; padding: 1.75rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1.5rem;
+  }
+  .activity-price { font-size: 1.55rem; font-weight: 700; color: #60a5fa; line-height: 1.2; margin: .35rem 0; }
+  .badge-session {
+    display: inline-block;
+    background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.28);
+    color: #93c5fd; border-radius: 20px; padding: .22rem .75rem;
+    font-size: .7rem; font-weight: 500;
+  }
+
+  /* ── PRODUK CARDS ── */
+  .produk-card {
+    background: rgba(17,29,50,.65); border: 1px solid var(--nt-border);
+    border-radius: 14px; padding: 1.4rem;
+    height: 100%; display: flex; flex-direction: column;
+    transition: border-color .3s, transform .3s;
+  }
+  .produk-card:hover { border-color: rgba(37,99,235,.38); transform: translateY(-3px); }
+  .produk-name  { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .35rem; }
+  .produk-price { color: #60a5fa; font-weight: 600; font-size: .9rem; margin-bottom: .3rem; }
+  .produk-id    { font-size: .72rem; color: var(--nt-muted); flex: 1; }
+  .produk-card .btn-outline-nt { margin-top: 1rem; padding: .5rem 1rem; font-size: .8rem; justify-content: center; }
+
+  /* Stagger delay classes — no Django tags in inline style */
+  .rd1 { transition-delay: .05s; }
+  .rd2 { transition-delay: .12s; }
+  .rd3 { transition-delay: .19s; }
+  .rd4 { transition-delay: .26s; }
+
+  /* ── QUICK ACTIONS ── */
+  .quick-card {
+    display: block; text-decoration: none; color: var(--nt-text) !important;
+    background: rgba(17,29,50,.65); border: 1px solid var(--nt-border);
+    border-radius: 16px; padding: 1.75rem;
+    height: 100%; transition: border-color .3s, transform .3s;
+  }
+  .quick-card:hover { border-color: rgba(37,99,235,.4); transform: translateY(-3px); }
+  .quick-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: rgba(37,99,235,.12); border: 1px solid rgba(37,99,235,.2);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .quick-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: .35rem; }
+  .quick-desc  { color: var(--nt-muted); font-size: .83rem; line-height: 1.6; margin: 0; }
+
+  /* ── CTA ── */
+  .cta-box {
+    background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(79,70,229,.12));
+    border: 1px solid rgba(37,99,235,.22);
+    border-radius: 24px; padding: 4.5rem 2rem; text-align: center;
+  }
+  .cta-heading {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.3rem);
+    font-weight: 800; margin-bottom: .75rem;
+    background: linear-gradient(135deg, var(--nt-text), #93c5fd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .cta-sub { color: var(--nt-muted); max-width: 480px; margin: 0 auto 1.75rem; font-size: .95rem; line-height: 1.7; }
+
+  /* ── FOOTER ── */
+  .nt-footer { border-top: 1px solid var(--nt-border); padding: 2rem 0; text-align: center; color: var(--nt-muted); font-size: .82rem; }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+    }
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(6, 11, 20, 0.97);
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--nt-border);
+      gap: 0.85rem;
+    }
+    .hamburger {
+      display: flex;
+    }
+    .hero {
+      padding: 3.5rem 0 3rem;
+    }
+    .hero-btns {
+      justify-content: center;
+    }
+     .hero-float-badge {
+       bottom: -12px;
+       left: -8px;
+     }
+    .cta-box {
+      padding: 3rem 1.5rem;
+    }
+    .stat-divider {
+      border: none;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .hero-btns {
+      justify-content: flex-start;
+    }
+    .hero-badge {
+      justify-content: flex-start;
+    }
+    .hero-content {
+      text-align: left;
+    }
+  }
+</style>
+
+<div class="bg-ambient">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+</div>
+
+<div class="page">
+
+  <!-- ─── NAVBAR ─── -->
+  <nav class="nt-nav">
+    <div class="container position-relative">
+      <a class="nav-brand" href="/">
+        <span class="nav-dot"></span>
+        Nusantara Tech
+      </a>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-links" id="navLinks">
+        <a href="#layanan">Layanan</a>
+        <a href="{% url 'produk_form' %}">Form Produk</a>
         {% if user.is_authenticated %}
-        <!-- Quick Actions for Authenticated Users -->
-        <section class="section quick-actions fade-up">
-            <div class="section-label">Menu Cepat</div>
-            <h2>Lanjutkan Aktivitas Anda</h2>
-            <div class="quick-actions-grid">
-                <a href="{% url 'produk_form' %}" class="quick-action-card">
-                    <div class="quick-action-icon">+</div>
-                    <h3>Tambah Produk</h3>
-                    <p>Tambahkan produk baru ke katalog</p>
-                </a>
-                <a href="{% url 'produk_list' %}" class="quick-action-card">
-                    <div class="quick-action-icon">📦</div>
-                    <h3>Kelola Produk</h3>
-                    <p>Lihat dan edit semua produk Anda</p>
-                </a>
-            </div>
-        </section>
+          <a href="{% url 'dashboard' %}">Dashboard</a>
+          <a href="{% url 'produk_list' %}">Produk</a>
+          <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-cta">Login</a>
         {% endif %}
+      </div>
+    </div>
+  </nav>
 
-        <section class="section">
-            <div class="cta-card fade-up" style="background: linear-gradient(135deg, var(--accent-light), rgba(37, 99, 235, 0.08)); border: 2px solid var(--accent); border-radius: 32px; padding: 3rem 2rem; text-align: center;">
-                <h2 style="margin-top: 0; color: var(--accent);">Siap untuk memulai?</h2>
-                <p style="color: var(--muted); max-width: 600px; margin: 1rem auto;">Bergabunglah dengan ribuan bisnis yang telah meningkatkan produktivitas mereka dengan platform kami.</p>
-                <a class="button button-primary" href="{% url 'produk_form' %}" style="margin-top: 1rem;">Mulai Gratis Hari Ini</a>
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="container">
+      <div class="row align-items-center g-5 flex-lg-row-reverse">
+
+        <div class="col-lg-6 d-flex flex-column justify-content-center">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span class="hero-badge-dot"></span>
+              Platform Manajemen Bisnis
             </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 Nusantara Tech. Semua hak dilindungi.</p>
+            <h1 class="hero-heading">
+              Solusi digital yang <span class="highlight">sederhana</span><br>&amp; elegan
+            </h1>
+            <p class="hero-sub mx-auto mx-lg-0">
+              Kami membantu bisnis Anda berkembang dengan teknologi modern yang
+              mudah digunakan dan dirancang khusus untuk kesuksesan Anda.
+            </p>
+            <div class="hero-btns">
+              <a href="{% url 'produk_form' %}" class="btn-primary-nt">
+                Mulai Sekarang
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="#layanan" class="btn-outline-nt">Pelajari Lebih</a>
+            </div>
+          </div>
         </div>
-    </footer>
+
+        <div class="col-lg-6 d-flex justify-content-center">
+          <div class="hero-img-wrap">
+            <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=900&q=80" alt="Tim Nusantara Tech">
+            <div class="hero-float-badge">
+              <div class="float-badge-icon">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                  <polyline points="16 7 22 7 22 13"/>
+                </svg>
+              </div>
+              <div>
+                <span class="float-badge-label">Produk Aktif</span>
+                <span class="float-badge-sub">{{ total_produk }} produk tersimpan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── STATS BAR ─── -->
+  <div class="stats-bar reveal">
+    <div class="container">
+      <div class="row g-0">
+        <div class="col-4">
+          <div class="stat-item">
+            <div class="stat-num">{{ total_produk }}</div>
+            <div class="stat-lbl">Total Produk</div>
+          </div>
+        </div>
+        <div class="col-4 stat-divider">
+          <div class="stat-item">
+            <div class="stat-num">{{ produk_count }}</div>
+            <div class="stat-lbl">Produk Anda</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-item">
+            <div class="stat-num">24/7</div>
+            <div class="stat-lbl">Dukungan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── LAYANAN ─── -->
+  <section id="layanan" class="py-5 mt-3">
+    <div class="container">
+      <div class="text-center mb-5 reveal">
+        <div class="section-label">Layanan</div>
+        <h2 class="section-heading">Apa yang kami tawarkan</h2>
+        <p class="section-sub mx-auto" style="max-width: 500px;">
+          Tiga pilar utama yang mendukung pertumbuhan bisnis Anda.
+        </p>
+      </div>
+      <div class="row g-4 align-items-stretch">
+        <div class="col-md-4 reveal rd1">
+          <div class="service-card">
+            <div class="svc-icon svc-blue">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#60a5fa" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <div class="svc-title">Desain Modern</div>
+            <p class="svc-desc">Antarmuka yang indah dan intuitif yang membuat pengguna Anda merasa nyaman dan produktif setiap hari.</p>
+          </div>
+        </div>
+        <div class="col-md-4 reveal rd2">
+          <div class="service-card">
+            <div class="svc-icon svc-cyan">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#22d3ee" stroke-width="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+            </div>
+            <div class="svc-title">Performa Cepat</div>
+            <p class="svc-desc">Aplikasi web yang responsif dan cepat dioptimalkan untuk semua perangkat dengan pengalaman pengguna yang sempurna.</p>
+          </div>
+        </div>
+        <div class="col-md-4 reveal rd3">
+          <div class="service-card">
+            <div class="svc-icon svc-green">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#34d399" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div class="svc-title">Dukungan Profesional</div>
+            <p class="svc-desc">Tim ahli kami siap membantu Anda mengembangkan, mengintegrasikan, dan memelihara sistem Anda 24/7.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── AKTIVITAS TERBARU (kondisional) ─── -->
+  {% if last_produk %}
+  <section class="pb-5">
+    <div class="container reveal">
+      <div class="section-label">Aktivitas Terbaru</div>
+      <h2 class="section-heading mb-4">Produk terakhir yang Anda tambahkan</h2>
+      <div class="activity-wrap">
+        <div>
+          <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:.3rem;">{{ last_produk.nama }}</h3>
+          <div class="activity-price">Rp {{ last_produk.harga|intcomma }}</div>
+          <span class="badge-session">Tersimpan di Sesi</span>
+        </div>
+        <a href="{% url 'produk_form' %}" class="btn-primary-nt">Tambah Lagi</a>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ─── KATALOG PRODUK ─── -->
+  <section class="py-5">
+    <div class="container">
+      <div class="reveal mb-4">
+        <div class="section-label">Katalog</div>
+        <h2 class="section-heading">Produk Terbaru</h2>
+        <p class="section-sub">Lihat produk-produk terbaru yang telah ditambahkan ke platform kami.</p>
+      </div>
+
+      <div class="row g-4 align-items-stretch">
+        {% for produk in produk_terbaru %}
+        {# Stagger via predefined classes — no Django tag inside style="" #}
+        <div class="col-sm-6 col-md-4 col-lg-3 reveal
+          {% cycle 'rd1' 'rd2' 'rd3' 'rd4' %}">
+          <div class="produk-card">
+            <div class="produk-name">{{ produk.nama }}</div>
+            <div class="produk-price">Rp {{ produk.harga|intcomma }}</div>
+            <div class="produk-id">ID: #{{ produk.id }}</div>
+            <a href="{% url 'produk_form' %}" class="btn-outline-nt">Tambah Produk Baru</a>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="text-center py-5" style="color: var(--nt-muted);">
+            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2" style="opacity:.3;display:block;margin:0 auto 1rem;">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+            <p style="margin-bottom:1.25rem;">Belum ada produk yang ditambahkan.</p>
+            <a href="{% url 'produk_form' %}" class="btn-primary-nt">Mulai Tambah Produk</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── QUICK ACTIONS (login) ─── -->
+  {% if user.is_authenticated %}
+  <section class="pb-5">
+    <div class="container reveal">
+      <div class="section-label">Menu Cepat</div>
+      <h2 class="section-heading mb-4">Lanjutkan Aktivitas Anda</h2>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <a href="{% url 'produk_form' %}" class="quick-card">
+            <div class="quick-icon">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </div>
+            <div class="quick-title">Tambah Produk</div>
+            <p class="quick-desc">Tambahkan produk baru ke katalog Anda dengan cepat dan mudah.</p>
+          </a>
+        </div>
+        <div class="col-md-6">
+          <a href="{% url 'produk_list' %}" class="quick-card">
+            <div class="quick-icon">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+            </div>
+            <div class="quick-title">Kelola Produk</div>
+            <p class="quick-desc">Lihat, edit, dan hapus semua produk yang sudah tersimpan.</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ─── CTA ─── -->
+  <section class="py-5">
+    <div class="container reveal">
+      <div class="cta-box">
+        <h2 class="cta-heading">Siap untuk memulai?</h2>
+        <p class="cta-sub">
+          Bergabunglah dengan ribuan bisnis yang telah meningkatkan produktivitas
+          mereka dengan platform kami.
+        </p>
+        <a href="{% url 'produk_form' %}" class="btn-primary-nt">
+          Mulai Gratis Hari Ini
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer class="nt-footer">
+    <div class="container">
+      <p style="margin: 0;">&copy; 2026 Nusantara Tech. Semua hak dilindungi.</p>
+    </div>
+  </footer>
+
+</div><!-- .page -->
+
+<script>
+  // Hamburger
+  document.getElementById('hamburger').addEventListener('click', function () {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  // Scroll reveal
+  var revealEls = document.querySelectorAll('.reveal');
+  var revealObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  revealEls.forEach(function (el) { revealObserver.observe(el); });
+</script>
 {% endblock %}
