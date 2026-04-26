@@ -5,418 +5,432 @@
 
 {% block content %}
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
   :root {
-    --nt-dark:   #060b14;
-    --nt-blue:   #2563eb;
-    --nt-indigo: #4f46e5;
-    --nt-cyan:   #06b6d4;
-    --nt-green:  #10b981;
-    --nt-border: rgba(255,255,255,.07);
-    --nt-muted:  #64748b;
-    --nt-text:   #f1f5f9;
+    --dark:    #07090f;
+    --surface: #0d1117;
+    --card:    #111827;
+    --card2:   #161e2e;
+    --blue:    #3b82f6;
+    --indigo:  #6366f1;
+    --cyan:    #22d3ee;
+    --green:   #10b981;
+    --border:  rgba(255,255,255,.06);
+    --border2: rgba(255,255,255,.11);
+    --muted:   #6b7280;
+    --soft:    #9ca3af;
+    --text:    #f9fafb;
   }
 
-  *, *::before, *::after { box-sizing: border-box; }
-  body { background: var(--nt-dark); font-family: 'DM Sans', sans-serif; color: var(--nt-text); overflow-x: hidden; margin: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--dark);
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
 
-  /* ── AMBIENT BG ── */
-  .bg-ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-  .bg-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: .13; }
-  .bg-blob-1 { width: 600px; height: 600px; background: var(--nt-blue);   top: -200px; left: -200px; animation: bmove1 16s ease-in-out infinite alternate; }
-  .bg-blob-2 { width: 500px; height: 500px; background: var(--nt-indigo); bottom: -100px; right: -100px; animation: bmove2 18s ease-in-out infinite alternate; }
-  .bg-blob-3 { width: 350px; height: 350px; background: var(--nt-cyan);   top: 40%; left: 55%; animation: bmove1 22s ease-in-out infinite alternate-reverse; }
-  @keyframes bmove1 { to { transform: translate(80px, 60px) scale(1.15); } }
-  @keyframes bmove2 { to { transform: translate(-60px, -40px) scale(1.1); } }
+  /* ── AMBIENT ── */
+  .ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .amb-blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: .09; }
+  .amb-1 { width: 700px; height: 700px; background: #3b82f6; top: -250px; left: -200px; animation: ab1 18s ease-in-out infinite alternate; }
+  .amb-2 { width: 550px; height: 550px; background: #6366f1; bottom: -150px; right: -120px; animation: ab2 20s ease-in-out infinite alternate; }
+  .amb-3 { width: 400px; height: 400px; background: #22d3ee; top: 50%; left: 60%; animation: ab1 24s ease-in-out infinite alternate-reverse; }
+  @keyframes ab1 { to { transform: translate(60px, 50px) scale(1.12); } }
+  @keyframes ab2 { to { transform: translate(-50px, -35px) scale(1.08); } }
 
   .page { position: relative; z-index: 1; }
 
   /* ── NAVBAR ── */
   .nt-nav {
     position: sticky; top: 0; z-index: 100;
-    backdrop-filter: blur(24px);
-    background: rgba(6,11,20,.75);
-    border-bottom: 1px solid var(--nt-border);
-    animation: fadeDown .5s ease both;
+    backdrop-filter: blur(28px) saturate(1.4);
+    background: rgba(7,9,15,.8);
+    border-bottom: 1px solid var(--border);
   }
-  .nt-nav .container { display: flex; align-items: center; justify-content: space-between; padding-top: .9rem; padding-bottom: .9rem; }
-  @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } }
-
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .85rem 1.5rem;
+  }
   .nav-brand {
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
-    color: var(--nt-text) !important; text-decoration: none;
-    letter-spacing: -.02em; display: flex; align-items: center; gap: .55rem;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.15rem;
+    color: var(--text) !important; text-decoration: none;
+    display: flex; align-items: center; gap: .6rem; letter-spacing: -.02em;
   }
-  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nt-blue); box-shadow: 0 0 8px var(--nt-blue); }
-
-  .nav-links { display: flex; align-items: center; gap: 1.5rem; }
-  .nav-links a { color: var(--nt-muted) !important; text-decoration: none; font-size: .875rem; font-weight: 500; transition: color .2s; }
-  .nav-links a:hover { color: var(--nt-text) !important; }
-  .nav-links .nav-cta { background: var(--nt-blue); color: #fff !important; padding: .4rem 1.1rem; border-radius: 8px; font-size: .82rem; transition: opacity .2s; }
-  .nav-links .nav-cta:hover { opacity: .85; }
-
+  .brand-mark {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--blue), var(--indigo));
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .nav-links { display: flex; align-items: center; gap: 1.4rem; }
+  .nav-links a {
+    color: var(--muted) !important; text-decoration: none;
+    font-size: .83rem; font-weight: 500; transition: color .18s;
+  }
+  .nav-links a:hover { color: var(--text) !important; }
+  .nav-cta {
+    background: var(--blue) !important; color: #fff !important;
+    padding: .38rem 1rem; border-radius: 7px; font-size: .82rem !important;
+    font-weight: 600 !important; transition: opacity .2s !important;
+  }
+  .nav-cta:hover { opacity: .82 !important; }
   .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: .3rem; }
-  .hamburger span { display: block; width: 22px; height: 2px; background: var(--nt-text); border-radius: 2px; transition: all .3s; }
+  .hamburger span { display: block; width: 20px; height: 1.5px; background: var(--text); border-radius: 2px; }
+
+  /* ── WRAP ── */
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
 
   /* ── BUTTONS ── */
-  .btn-primary-nt {
-    display: inline-flex; align-items: center; gap: .5rem;
-    padding: .72rem 1.65rem; border-radius: 10px; border: none;
-    background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
-    color: #fff !important; font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: .9rem; text-decoration: none;
-    transition: transform .2s, box-shadow .2s;
+  .btn-pri {
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .7rem 1.5rem; border-radius: 9px; border: none;
+    background: var(--blue); color: #fff !important;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: .875rem;
+    text-decoration: none; cursor: pointer;
+    transition: transform .2s, box-shadow .2s, background .2s;
   }
-  .btn-primary-nt:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,99,235,.45); }
+  .btn-pri:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,.4); background: #2563eb; }
 
-  .btn-outline-nt {
-    display: inline-flex; align-items: center; gap: .5rem;
-    padding: .72rem 1.65rem; border-radius: 10px;
-    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.13);
-    color: var(--nt-text) !important; font-weight: 500; font-size: .9rem;
-    text-decoration: none; transition: background .2s, border-color .2s;
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .7rem 1.5rem; border-radius: 9px;
+    background: rgba(255,255,255,.04); border: 1px solid var(--border2);
+    color: var(--soft) !important; font-weight: 500; font-size: .875rem;
+    text-decoration: none; cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s;
   }
-  .btn-outline-nt:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.22); }
+  .btn-ghost:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: var(--text) !important; }
 
-  /* ── HERO ── */
+  /* ════════════════════════════════
+     ── HERO ──
+     Teks kiri rata tengah vertikal,
+     gambar di kanan
+  ════════════════════════════════ */
   .hero {
-    padding: 6rem 0 5rem;
+    min-height: 600px;
     display: flex;
     align-items: center;
+    padding: 5rem 2rem;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;       /* rata tengah vertikal kedua kolom */
+    gap: 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
   }
 
-  .hero-content {
+  /* KIRI: semua konten rata tengah vertikal */
+  .hero-left {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    text-align: center;
+    justify-content: center;   /* push ke tengah */
+    gap: 0;                    /* pakai margin tiap elemen */
   }
 
-  .hero-btns {
-    display: flex;
-    gap: 0.85rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    animation: fadeUp 0.6s ease both 0.34s;
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(59,130,246,.08);
+    border: 1px solid rgba(59,130,246,.22);
+    border-radius: 100px; padding: .28rem .9rem;
+    font-size: .7rem; font-weight: 600; color: #93c5fd;
+    letter-spacing: .06em; text-transform: uppercase;
+    width: fit-content; margin-bottom: 1.4rem;
   }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: #3b82f6; flex-shrink: 0; }
 
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    background: rgba(37, 99, 235, 0.1);
-    border: 1px solid rgba(37, 99, 235, 0.28);
-    border-radius: 20px;
-    padding: 0.3rem 0.9rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #93c5fd;
-    margin-bottom: 1.5rem;
-    animation: fadeUp 0.6s ease both 0.1s;
-  }
-
-  .hero-badge-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--nt-blue);
-  }
-
-  .hero-heading {
+  .hero h1 {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(2.2rem, 5vw, 3.8rem);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    margin-bottom: 1.25rem;
-    animation: fadeUp 0.6s ease both 0.18s;
+    font-size: clamp(2.2rem, 3.5vw, 3rem);
+    font-weight: 800; line-height: 1.08;
+    letter-spacing: -.035em; margin-bottom: 1.2rem; color: #f9fafb;
   }
-
-  .hero-heading .highlight {
-    background: linear-gradient(135deg, var(--nt-blue), var(--nt-cyan));
-    -webkit-background-clip: text;
-    background-clip: text;
+  .gr {
+    background: linear-gradient(120deg, #3b82f6, #22d3ee);
+    -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  .hero-sub {
-    font-size: 1rem;
-    color: var(--nt-muted);
-    line-height: 1.75;
-    max-width: 500px;
-    margin-bottom: 2rem;
-    animation: fadeUp 0.6s ease both 0.26s;
+  .desc {
+    font-size: .93rem; color: #6b7280; line-height: 1.8;
+    margin-bottom: 2rem; max-width: 420px;
   }
 
-  .hero-img-wrap {
+  .actions { display: flex; gap: .7rem; flex-wrap: wrap; margin-bottom: 2rem; }
+
+  .trust { display: flex; align-items: center; gap: .7rem; }
+  .avatars { display: flex; }
+  .avatars span {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid #07090f;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .58rem; font-weight: 700; color: #fff;
+    margin-left: -7px; flex-shrink: 0;
+  }
+  .avatars span:first-child { margin-left: 0; }
+  .trust-txt { font-size: .75rem; color: #6b7280; line-height: 1.45; }
+  .trust-txt strong { color: #9ca3af; font-weight: 600; }
+
+  /* KANAN: gambar + badge */
+  .hero-right {
     position: relative;
-    animation: fadeUp 0.7s ease both 0.3s;
-    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .hero-img-wrap img {
+  .img-frame {
+    position: relative; border-radius: 20px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 28px 70px rgba(0,0,0,.6);
     width: 100%;
-    border-radius: 20px;
-    object-fit: cover;
-    border: 1px solid var(--nt-border);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-    display: block;
-    max-width: 480px;
+  }
+  .img-frame img {
+    width: 100%; height: 440px;
+    object-fit: cover; object-position: center top;
+    display: block; filter: brightness(.88) saturate(1.05);
+  }
+  .img-frame::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 35%;
+    background: linear-gradient(to top, rgba(7,9,15,.65), transparent);
+    pointer-events: none;
+  }
+  .img-frame::before {
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+    background-size: 44px 44px;
   }
 
-  .hero-float-badge {
-    position: absolute;
-    bottom: -18px;
-    left: -18px;
-    background: rgba(9, 20, 40, 0.92);
-    border: 1px solid rgba(37, 99, 235, 0.3);
-    border-radius: 12px;
-    padding: 0.7rem 1rem;
-    backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    white-space: nowrap;
+  /* badge kiri-atas */
+  .tl-badge {
+    position: absolute; top: -14px; left: -14px; z-index: 4;
+    background: #0d1117; border: 1px solid rgba(59,130,246,.28);
+    border-radius: 11px; padding: .55rem .8rem;
+    display: flex; align-items: center; gap: .5rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,.5);
+  }
+  .tl-icon {
+    width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
+    background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tl-num { font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 800; color: #60a5fa; line-height: 1; }
+  .tl-sub { font-size: .6rem; color: #6b7280; display: block; margin-top: 1px; }
+
+  /* badge kanan-bawah */
+  .br-badge {
+    position: absolute; bottom: -14px; right: -14px; z-index: 4;
+    background: #0d1117; border: 1px solid rgba(59,130,246,.25);
+    border-radius: 11px; padding: .65rem .9rem;
+    display: flex; align-items: center; gap: .55rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,.5); white-space: nowrap;
+  }
+  .br-icon {
+    width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
+    background: linear-gradient(135deg, #3b82f6, #22d3ee);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .br-label { font-size: .71rem; font-weight: 600; color: #f9fafb; }
+  .br-sub { font-size: .62rem; color: #6b7280; display: block; margin-top: 2px; }
+
+  /* glow line kanan gambar */
+  .edge-glow {
+    position: absolute; top: 20px; right: -1px; bottom: 20px; width: 2px; z-index: 2;
+    background: linear-gradient(180deg, transparent, #3b82f6, transparent);
+    border-radius: 2px;
   }
 
-  .float-badge-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    flex-shrink: 0;
-    background: linear-gradient(135deg, var(--nt-blue), var(--nt-cyan));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .float-badge-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-
-  .float-badge-sub {
-    font-size: 0.68rem;
-    color: var(--nt-muted);
-    display: block;
-    margin-top: 1px;
-  }
-
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
-
-  /* ── STATS BAR ── */
-  .stats-bar { padding: 2.5rem 0; border-top: 1px solid var(--nt-border); border-bottom: 1px solid var(--nt-border); }
-  .stat-item { text-align: center; }
+  /* ── STATS STRIP ── */
+  .stats-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2.25rem 0; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .stat-item { text-align: center; padding: .5rem 1rem; }
+  .stat-item + .stat-item { border-left: 1px solid var(--border); }
   .stat-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 2.2rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    background: linear-gradient(135deg, var(--nt-text), #93c5fd);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800;
+    line-height: 1; letter-spacing: -.04em;
+    background: linear-gradient(135deg, #f9fafb, #93c5fd);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
+  .stat-lbl { font-size: .76rem; color: var(--muted); margin-top: .35rem; font-weight: 500; }
 
-  .stat-lbl {
-    font-size: 0.78rem;
-    color: var(--nt-muted);
-    margin-top: 0.3rem;
-  }
-
-  .stat-divider {
-    border-left: 1px solid var(--nt-border);
-    border-right: 1px solid var(--nt-border);
-  }
-
-  /* ── SECTION COMMON ── */
-  .section-label {
-    display: inline-block;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #93c5fd;
-    margin-bottom: 0.6rem;
-  }
-
-  .section-heading {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(1.6rem, 3vw, 2.3rem);
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    margin-bottom: 0.65rem;
-  }
-
-  .section-sub {
-    font-size: 0.9rem;
-    color: var(--nt-muted);
-    line-height: 1.7;
-  }
+  /* ── SECTION HEADER ── */
+  .sec-eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #93c5fd; display: block; margin-bottom: .55rem; }
+  .sec-h2 { font-family: 'Syne', sans-serif; font-size: clamp(1.65rem, 2.8vw, 2.2rem); font-weight: 800; letter-spacing: -.025em; margin-bottom: .6rem; line-height: 1.15; }
+  .sec-desc { font-size: .9rem; color: var(--muted); line-height: 1.75; }
 
   /* ── SERVICE CARDS ── */
-  .service-card {
-    background: rgba(17,29,50,.65); border: 1px solid var(--nt-border);
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .svc-card {
+    background: var(--card); border: 1px solid var(--border);
     border-radius: 16px; padding: 1.75rem;
-    height: 100%; transition: border-color .3s, transform .3s;
+    transition: border-color .25s, transform .25s, background .25s;
+    position: relative; overflow: hidden;
   }
-  .service-card:hover { border-color: rgba(37,99,235,.4); transform: translateY(-4px); }
-  .svc-icon {
-    width: 46px; height: 46px; border-radius: 11px;
-    display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem;
+  .svc-card::before {
+    content: ''; position: absolute; inset: 0; opacity: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(59,130,246,.06), transparent 60%);
+    transition: opacity .3s;
   }
-  .svc-blue  { background: rgba(37,99,235,.15); }
-  .svc-cyan  { background: rgba(6,182,212,.15); }
-  .svc-green { background: rgba(16,185,129,.15); }
-  .svc-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: .55rem; }
-  .svc-desc  { font-size: .875rem; color: var(--nt-muted); line-height: 1.7; margin: 0; }
+  .svc-card:hover { border-color: rgba(59,130,246,.35); transform: translateY(-4px); background: var(--card2); }
+  .svc-card:hover::before { opacity: 1; }
+  .svc-icon-wrap { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; border: 1px solid; }
+  .ic-blue  { background: rgba(59,130,246,.1);  border-color: rgba(59,130,246,.2); }
+  .ic-cyan  { background: rgba(34,211,238,.08); border-color: rgba(34,211,238,.2); }
+  .ic-green { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.2); }
+  .svc-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+  .svc-body  { font-size: .855rem; color: var(--muted); line-height: 1.72; }
 
   /* ── ACTIVITY ── */
-  .activity-wrap {
-    background: rgba(17,29,50,.65); border: 1px solid rgba(37,99,235,.22);
+  .activity-card {
+    background: var(--card2); border: 1px solid rgba(59,130,246,.18);
     border-radius: 16px; padding: 1.75rem 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+    position: relative; overflow: hidden;
   }
-  .activity-price { font-size: 1.55rem; font-weight: 700; color: #60a5fa; line-height: 1.2; margin: .35rem 0; }
-  .badge-session {
-    display: inline-block;
-    background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.28);
-    color: #93c5fd; border-radius: 20px; padding: .22rem .75rem;
-    font-size: .7rem; font-weight: 500;
+  .activity-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(59,130,246,.4), transparent);
+  }
+  .act-price { font-size: 1.6rem; font-weight: 700; color: #60a5fa; margin: .3rem 0; font-family: 'Syne', sans-serif; }
+  .act-badge {
+    display: inline-block; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.22);
+    color: #93c5fd; border-radius: 100px; padding: .2rem .7rem;
+    font-size: .68rem; font-weight: 600; letter-spacing: .04em;
   }
 
   /* ── PRODUK CARDS ── */
+  .produk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
   .produk-card {
-    background: rgba(17,29,50,.65); border: 1px solid var(--nt-border);
-    border-radius: 14px; padding: 1.4rem;
-    height: 100%; display: flex; flex-direction: column;
-    transition: border-color .3s, transform .3s;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 13px; padding: 1.3rem;
+    display: flex; flex-direction: column;
+    transition: border-color .25s, transform .25s;
   }
-  .produk-card:hover { border-color: rgba(37,99,235,.38); transform: translateY(-3px); }
-  .produk-name  { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .35rem; }
-  .produk-price { color: #60a5fa; font-weight: 600; font-size: .9rem; margin-bottom: .3rem; }
-  .produk-id    { font-size: .72rem; color: var(--nt-muted); flex: 1; }
-  .produk-card .btn-outline-nt { margin-top: 1rem; padding: .5rem 1rem; font-size: .8rem; justify-content: center; }
-
-  /* Stagger delay classes — no Django tags in inline style */
-  .rd1 { transition-delay: .05s; }
-  .rd2 { transition-delay: .12s; }
-  .rd3 { transition-delay: .19s; }
-  .rd4 { transition-delay: .26s; }
+  .produk-card:hover { border-color: rgba(59,130,246,.35); transform: translateY(-3px); }
+  .produk-cat { font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #93c5fd; margin-bottom: .55rem; }
+  .produk-name { font-family: 'Syne', sans-serif; font-size: .92rem; font-weight: 700; margin-bottom: .3rem; line-height: 1.35; }
+  .produk-price { color: #60a5fa; font-weight: 600; font-size: .88rem; margin-bottom: .3rem; }
+  .produk-id { font-size: .7rem; color: var(--muted); flex: 1; margin-bottom: .9rem; }
+  .produk-card .btn-ghost { padding: .42rem .9rem; font-size: .775rem; justify-content: center; }
 
   /* ── QUICK ACTIONS ── */
-  .quick-card {
-    display: block; text-decoration: none; color: var(--nt-text) !important;
-    background: rgba(17,29,50,.65); border: 1px solid var(--nt-border);
+  .qa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+  .qa-card {
+    display: block; text-decoration: none; color: var(--text) !important;
+    background: var(--card); border: 1px solid var(--border);
     border-radius: 16px; padding: 1.75rem;
-    height: 100%; transition: border-color .3s, transform .3s;
+    transition: border-color .25s, transform .25s;
   }
-  .quick-card:hover { border-color: rgba(37,99,235,.4); transform: translateY(-3px); }
-  .quick-icon {
-    width: 48px; height: 48px; border-radius: 12px;
-    background: rgba(37,99,235,.12); border: 1px solid rgba(37,99,235,.2);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 1rem;
-  }
-  .quick-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: .35rem; }
-  .quick-desc  { color: var(--nt-muted); font-size: .83rem; line-height: 1.6; margin: 0; }
+  .qa-card:hover { border-color: rgba(59,130,246,.35); transform: translateY(-3px); }
+  .qa-icon { width: 44px; height: 44px; border-radius: 11px; background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.2); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+  .qa-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .98rem; margin-bottom: .35rem; }
+  .qa-desc  { color: var(--muted); font-size: .82rem; line-height: 1.65; }
 
   /* ── CTA ── */
-  .cta-box {
-    background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(79,70,229,.12));
-    border: 1px solid rgba(37,99,235,.22);
-    border-radius: 24px; padding: 4.5rem 2rem; text-align: center;
+  .cta-section { padding: 5rem 0; }
+  .cta-inner {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 24px; padding: 5rem 2rem; text-align: center;
+    position: relative; overflow: hidden;
   }
-  .cta-heading {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(1.5rem, 3vw, 2.3rem);
-    font-weight: 800; margin-bottom: .75rem;
-    background: linear-gradient(135deg, var(--nt-text), #93c5fd);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  .cta-inner::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(59,130,246,.07), transparent 50%),
+      radial-gradient(circle at 80% 50%, rgba(99,102,241,.07), transparent 50%);
   }
-  .cta-sub { color: var(--nt-muted); max-width: 480px; margin: 0 auto 1.75rem; font-size: .95rem; line-height: 1.7; }
+  .cta-inner::after {
+    content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(59,130,246,.35), transparent);
+  }
+  .cta-h2 {
+    font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800; letter-spacing: -.03em; margin-bottom: .75rem; position: relative;
+    background: linear-gradient(135deg, #f9fafb 40%, #93c5fd);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .cta-sub { color: var(--muted); max-width: 440px; margin: 0 auto 2rem; font-size: .94rem; line-height: 1.75; position: relative; }
+  .cta-actions { display: flex; justify-content: center; gap: .75rem; flex-wrap: wrap; position: relative; }
 
   /* ── FOOTER ── */
-  .nt-footer { border-top: 1px solid var(--nt-border); padding: 2rem 0; text-align: center; color: var(--nt-muted); font-size: .82rem; }
+  .nt-footer { border-top: 1px solid var(--border); padding: 2rem 1.5rem; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .footer-brand { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .85rem; display: flex; align-items: center; gap: .5rem; }
+  .footer-copy { font-size: .78rem; color: var(--muted); }
+  .footer-links { display: flex; gap: 1.25rem; }
+  .footer-links a { font-size: .78rem; color: var(--muted); text-decoration: none; transition: color .18s; }
+  .footer-links a:hover { color: var(--soft); }
 
-  /* ── SCROLL REVEAL ── */
-  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+  /* ── REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
   .reveal.visible { opacity: 1; transform: none; }
+  .rd1 { transition-delay: .05s; } .rd2 { transition-delay: .12s; }
+  .rd3 { transition-delay: .19s; } .rd4 { transition-delay: .26s; }
 
-  @media (max-width: 768px) {
-    .nav-links {
-      display: none;
-    }
-    .nav-links.open {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: rgba(6, 11, 20, 0.97);
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--nt-border);
-      gap: 0.85rem;
-    }
-    .hamburger {
-      display: flex;
-    }
-    .hero {
-      padding: 3.5rem 0 3rem;
-    }
-    .hero-btns {
-      justify-content: center;
-    }
-     .hero-float-badge {
-       bottom: -12px;
-       left: -8px;
-     }
-    .cta-box {
-      padding: 3rem 1.5rem;
-    }
-    .stat-divider {
-      border: none;
-    }
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .produk-grid { grid-template-columns: repeat(3, 1fr); }
   }
-
-  @media (min-width: 992px) {
-    .hero-btns {
-      justify-content: flex-start;
+  @media (max-width: 900px) {
+    .hero { padding: 3.5rem 1.5rem; min-height: auto; }
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
     }
-    .hero-badge {
-      justify-content: flex-start;
+    /* gambar tetap di atas pada mobile */
+    .hero-right { order: -1; }
+    .img-frame img { height: 300px; }
+    .tl-badge { top: -10px; left: -10px; }
+    .br-badge { bottom: -12px; right: -10px; padding: .55rem .8rem; }
+    .services-grid { grid-template-columns: 1fr; }
+    .produk-grid { grid-template-columns: repeat(2, 1fr); }
+    .qa-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-links.open {
+      display: flex; flex-direction: column; align-items: flex-start;
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: rgba(7,9,15,.97); padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--border); gap: .8rem;
     }
-    .hero-content {
-      text-align: left;
-    }
+    .hamburger { display: flex; }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .stat-item + .stat-item { border: none; }
+    .cta-inner { padding: 3rem 1.5rem; }
+  }
+  @media (max-width: 520px) {
+    .produk-grid { grid-template-columns: 1fr; }
+    .actions { flex-direction: column; }
+    .actions .btn-pri, .actions .btn-ghost { width: 100%; justify-content: center; }
   }
 </style>
 
-<div class="bg-ambient">
-  <div class="bg-blob bg-blob-1"></div>
-  <div class="bg-blob bg-blob-2"></div>
-  <div class="bg-blob bg-blob-3"></div>
+<div class="ambient">
+  <div class="amb-blob amb-1"></div>
+  <div class="amb-blob amb-2"></div>
+  <div class="amb-blob amb-3"></div>
 </div>
 
 <div class="page">
 
-  <!-- ─── NAVBAR ─── -->
+  <!-- ── NAVBAR ── -->
   <nav class="nt-nav">
-    <div class="container position-relative">
+    <div class="nav-inner">
       <a class="nav-brand" href="/">
-        <span class="nav-dot"></span>
+        <div class="brand-mark">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
         Nusantara Tech
       </a>
 
@@ -426,6 +440,7 @@
 
       <div class="nav-links" id="navLinks">
         <a href="#layanan">Layanan</a>
+        <a href="#katalog">Katalog</a>
         <a href="{% url 'produk_form' %}">Form Produk</a>
         {% if user.is_authenticated %}
           <a href="{% url 'dashboard' %}">Dashboard</a>
@@ -438,180 +453,188 @@
     </div>
   </nav>
 
-  <!-- ─── HERO ─── -->
+  <!-- ════════════════════════
+       ── HERO ──
+       Teks kiri | Gambar kanan
+       Keduanya rata tengah vertikal
+  ════════════════════════ -->
   <section class="hero">
-    <div class="container">
-      <div class="row align-items-center g-5 flex-lg-row-reverse">
+    <div class="hero-grid">
 
-        <div class="col-lg-6 d-flex flex-column justify-content-center">
-          <div class="hero-content">
-            <div class="hero-badge">
-              <span class="hero-badge-dot"></span>
-              Platform Manajemen Bisnis
-            </div>
-            <h1 class="hero-heading">
-              Solusi digital yang <span class="highlight">sederhana</span><br>&amp; elegan
-            </h1>
-            <p class="hero-sub mx-auto mx-lg-0">
-              Kami membantu bisnis Anda berkembang dengan teknologi modern yang
-              mudah digunakan dan dirancang khusus untuk kesuksesan Anda.
-            </p>
-            <div class="hero-btns">
-              <a href="{% url 'produk_form' %}" class="btn-primary-nt">
-                Mulai Sekarang
-                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-              <a href="#layanan" class="btn-outline-nt">Pelajari Lebih</a>
-            </div>
-          </div>
+      <!-- KIRI: TEKS — justify-content: center membuat semua konten tengah vertikal -->
+      <div class="hero-left">
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Platform Manajemen Bisnis
         </div>
 
-        <div class="col-lg-6 d-flex justify-content-center">
-          <div class="hero-img-wrap">
-            <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=900&q=80" alt="Tim Nusantara Tech">
-            <div class="hero-float-badge">
-              <div class="float-badge-icon">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
-                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
-                  <polyline points="16 7 22 7 22 13"/>
-                </svg>
-              </div>
-              <div>
-                <span class="float-badge-label">Produk Aktif</span>
-                <span class="float-badge-sub">{{ total_produk }} produk tersimpan</span>
-              </div>
-            </div>
-          </div>
+        <h1>
+          Kelola bisnis<br>
+          lebih <span class="gr">cerdas</span><br>
+          &amp; efisien
+        </h1>
+
+        <p class="desc">
+          Nusantara Tech menghadirkan solusi digital yang intuitif — dari
+          manajemen produk hingga operasional harian dalam satu platform
+          yang dirancang untuk pertumbuhan bisnis Anda.
+        </p>
+
+        <div class="actions">
+          <a href="{% url 'produk_form' %}" class="btn-pri">
+            Mulai Sekarang
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#layanan" class="btn-ghost">Pelajari Layanan</a>
         </div>
 
+        <div class="trust">
+          <div class="avatars">
+            <span>NT</span><span>AB</span><span>CR</span>
+          </div>
+          <div class="trust-txt">
+            <strong>{{ total_produk }} produk</strong> sudah tersimpan<br>di platform kami
+          </div>
+        </div>
       </div>
+
+      <!-- KANAN: GAMBAR -->
+      <div class="hero-right">
+        <div class="tl-badge">
+          <div class="tl-icon">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#60a5fa" stroke-width="2">
+              <path d="M12 20V10M18 20V4M6 20v-4"/>
+            </svg>
+          </div>
+          <div>
+            <span class="tl-num">24/7</span>
+            <span class="tl-sub">Support aktif</span>
+          </div>
+        </div>
+
+        <div class="img-frame">
+          <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=900&q=80" alt="Tim Nusantara Tech">
+        </div>
+
+        <div class="edge-glow"></div>
+
+        <div class="br-badge">
+          <div class="br-icon">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.2">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <polyline points="16 7 22 7 22 13"/>
+            </svg>
+          </div>
+          <div>
+            <span class="br-label">Produk Aktif</span>
+            <span class="br-sub">{{ total_produk }} produk tersimpan</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <!-- ─── STATS BAR ─── -->
-  <div class="stats-bar reveal">
-    <div class="container">
-      <div class="row g-0">
-        <div class="col-4">
-          <div class="stat-item">
-            <div class="stat-num">{{ total_produk }}</div>
-            <div class="stat-lbl">Total Produk</div>
-          </div>
+  <!-- ── STATS STRIP ── -->
+  <div class="stats-strip reveal">
+    <div class="wrap">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-num">{{ total_produk }}</div>
+          <div class="stat-lbl">Total Produk</div>
         </div>
-        <div class="col-4 stat-divider">
-          <div class="stat-item">
-            <div class="stat-num">{{ produk_count }}</div>
-            <div class="stat-lbl">Produk Anda</div>
-          </div>
+        <div class="stat-item">
+          <div class="stat-num">{{ produk_count }}</div>
+          <div class="stat-lbl">Produk Anda</div>
         </div>
-        <div class="col-4">
-          <div class="stat-item">
-            <div class="stat-num">24/7</div>
-            <div class="stat-lbl">Dukungan</div>
-          </div>
+        <div class="stat-item">
+          <div class="stat-num">24/7</div>
+          <div class="stat-lbl">Dukungan</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ─── LAYANAN ─── -->
-  <section id="layanan" class="py-5 mt-3">
-    <div class="container">
-      <div class="text-center mb-5 reveal">
-        <div class="section-label">Layanan</div>
-        <h2 class="section-heading">Apa yang kami tawarkan</h2>
-        <p class="section-sub mx-auto" style="max-width: 500px;">
-          Tiga pilar utama yang mendukung pertumbuhan bisnis Anda.
-        </p>
+  <!-- ── LAYANAN ── -->
+  <section id="layanan" style="padding: 5rem 0;">
+    <div class="wrap">
+      <div class="text-center reveal" style="margin-bottom: 3rem;">
+        <span class="sec-eyebrow">Layanan</span>
+        <h2 class="sec-h2">Apa yang kami tawarkan</h2>
+        <p class="sec-desc" style="max-width: 480px; margin: 0 auto;">Tiga pilar utama yang mendukung pertumbuhan bisnis Anda setiap hari.</p>
       </div>
-      <div class="row g-4 align-items-stretch">
-        <div class="col-md-4 reveal rd1">
-          <div class="service-card">
-            <div class="svc-icon svc-blue">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#60a5fa" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-            </div>
-            <div class="svc-title">Desain Modern</div>
-            <p class="svc-desc">Antarmuka yang indah dan intuitif yang membuat pengguna Anda merasa nyaman dan produktif setiap hari.</p>
+      <div class="services-grid">
+        <div class="svc-card reveal rd1">
+          <div class="svc-icon-wrap ic-blue">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#60a5fa" stroke-width="1.8"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
           </div>
+          <div class="svc-title">Desain Modern</div>
+          <p class="svc-body">Antarmuka yang indah dan intuitif yang membuat pengguna merasa nyaman dan produktif setiap harinya.</p>
         </div>
-        <div class="col-md-4 reveal rd2">
-          <div class="service-card">
-            <div class="svc-icon svc-cyan">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#22d3ee" stroke-width="2">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-            </div>
-            <div class="svc-title">Performa Cepat</div>
-            <p class="svc-desc">Aplikasi web yang responsif dan cepat dioptimalkan untuk semua perangkat dengan pengalaman pengguna yang sempurna.</p>
+        <div class="svc-card reveal rd2">
+          <div class="svc-icon-wrap ic-cyan">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#22d3ee" stroke-width="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
           </div>
+          <div class="svc-title">Performa Cepat</div>
+          <p class="svc-body">Aplikasi web responsif yang dioptimalkan untuk semua perangkat dengan pengalaman pengguna yang mulus.</p>
         </div>
-        <div class="col-md-4 reveal rd3">
-          <div class="service-card">
-            <div class="svc-icon svc-green">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#34d399" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            </div>
-            <div class="svc-title">Dukungan Profesional</div>
-            <p class="svc-desc">Tim ahli kami siap membantu Anda mengembangkan, mengintegrasikan, dan memelihara sistem Anda 24/7.</p>
+        <div class="svc-card reveal rd3">
+          <div class="svc-icon-wrap ic-green">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#34d399" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
+          <div class="svc-title">Dukungan Profesional</div>
+          <p class="svc-body">Tim ahli kami siap membantu Anda mengembangkan, mengintegrasikan, dan memelihara sistem 24/7.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ─── AKTIVITAS TERBARU (kondisional) ─── -->
+  <!-- ── AKTIVITAS TERBARU ── -->
   {% if last_produk %}
-  <section class="pb-5">
-    <div class="container reveal">
-      <div class="section-label">Aktivitas Terbaru</div>
-      <h2 class="section-heading mb-4">Produk terakhir yang Anda tambahkan</h2>
-      <div class="activity-wrap">
+  <section style="padding: 0 0 4rem;">
+    <div class="wrap reveal">
+      <span class="sec-eyebrow">Aktivitas Terbaru</span>
+      <h2 class="sec-h2" style="margin-bottom: 1.5rem;">Produk terakhir yang Anda tambahkan</h2>
+      <div class="activity-card">
         <div>
-          <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:.3rem;">{{ last_produk.nama }}</h3>
-          <div class="activity-price">Rp {{ last_produk.harga|intcomma }}</div>
-          <span class="badge-session">Tersimpan di Sesi</span>
+          <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.25rem;margin-bottom:.35rem;">{{ last_produk.nama }}</h3>
+          <div class="act-price">Rp {{ last_produk.harga|intcomma }}</div>
+          <span class="act-badge">Tersimpan</span>
         </div>
-        <a href="{% url 'produk_form' %}" class="btn-primary-nt">Tambah Lagi</a>
+        <a href="{% url 'produk_form' %}" class="btn-pri">
+          Tambah Lagi
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
       </div>
     </div>
   </section>
   {% endif %}
 
-  <!-- ─── KATALOG PRODUK ─── -->
-  <section class="py-5">
-    <div class="container">
-      <div class="reveal mb-4">
-        <div class="section-label">Katalog</div>
-        <h2 class="section-heading">Produk Terbaru</h2>
-        <p class="section-sub">Lihat produk-produk terbaru yang telah ditambahkan ke platform kami.</p>
+  <!-- ── KATALOG ── -->
+  <section id="katalog" style="padding: 0 0 5rem;">
+    <div class="wrap">
+      <div class="reveal" style="margin-bottom: 2rem;">
+        <span class="sec-eyebrow">Katalog</span>
+        <h2 class="sec-h2">Produk Terbaru</h2>
+        <p class="sec-desc">Produk-produk terbaru yang telah ditambahkan ke platform.</p>
       </div>
-
-      <div class="row g-4 align-items-stretch">
+      <div class="produk-grid">
         {% for produk in produk_terbaru %}
-        {# Stagger via predefined classes — no Django tag inside style="" #}
-        <div class="col-sm-6 col-md-4 col-lg-3 reveal
-          {% cycle 'rd1' 'rd2' 'rd3' 'rd4' %}">
-          <div class="produk-card">
-            <div class="produk-name">{{ produk.nama }}</div>
-            <div class="produk-price">Rp {{ produk.harga|intcomma }}</div>
-            <div class="produk-id">ID: #{{ produk.id }}</div>
-            <a href="{% url 'produk_form' %}" class="btn-outline-nt">Tambah Produk Baru</a>
-          </div>
+        <div class="produk-card reveal {% cycle 'rd1' 'rd2' 'rd3' 'rd4' %}">
+          <div class="produk-cat">Produk</div>
+          <div class="produk-name">{{ produk.nama }}</div>
+          <div class="produk-price">Rp {{ produk.harga|intcomma }}</div>
+          <div class="produk-id">#{{ produk.id }}</div>
+          <a href="{% url 'produk_form' %}" class="btn-ghost">Tambah Produk</a>
         </div>
         {% empty %}
-        <div class="col-12">
-          <div class="text-center py-5" style="color: var(--nt-muted);">
-            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2" style="opacity:.3;display:block;margin:0 auto 1rem;">
+        <div style="grid-column: 1 / -1;">
+          <div style="text-align:center; padding: 4rem 0; color: var(--muted);">
+            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" style="display:block;margin:0 auto 1rem;opacity:.25">
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
             </svg>
-            <p style="margin-bottom:1.25rem;">Belum ada produk yang ditambahkan.</p>
-            <a href="{% url 'produk_form' %}" class="btn-primary-nt">Mulai Tambah Produk</a>
+            <p style="margin-bottom:1.5rem;font-size:.9rem;">Belum ada produk yang ditambahkan.</p>
+            <a href="{% url 'produk_form' %}" class="btn-pri">Mulai Tambah Produk</a>
           </div>
         </div>
         {% endfor %}
@@ -619,82 +642,87 @@
     </div>
   </section>
 
-  <!-- ─── QUICK ACTIONS (login) ─── -->
+  <!-- ── QUICK ACTIONS ── -->
   {% if user.is_authenticated %}
-  <section class="pb-5">
-    <div class="container reveal">
-      <div class="section-label">Menu Cepat</div>
-      <h2 class="section-heading mb-4">Lanjutkan Aktivitas Anda</h2>
-      <div class="row g-4">
-        <div class="col-md-6">
-          <a href="{% url 'produk_form' %}" class="quick-card">
-            <div class="quick-icon">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="2.5">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </div>
-            <div class="quick-title">Tambah Produk</div>
-            <p class="quick-desc">Tambahkan produk baru ke katalog Anda dengan cepat dan mudah.</p>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a href="{% url 'produk_list' %}" class="quick-card">
-            <div class="quick-icon">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-              </svg>
-            </div>
-            <div class="quick-title">Kelola Produk</div>
-            <p class="quick-desc">Lihat, edit, dan hapus semua produk yang sudah tersimpan.</p>
-          </a>
-        </div>
+  <section style="padding: 0 0 5rem;">
+    <div class="wrap reveal">
+      <span class="sec-eyebrow">Menu Cepat</span>
+      <h2 class="sec-h2" style="margin-bottom: 1.75rem;">Lanjutkan Aktivitas Anda</h2>
+      <div class="qa-grid">
+        <a href="{% url 'produk_form' %}" class="qa-card">
+          <div class="qa-icon">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
+          <div class="qa-title">Tambah Produk</div>
+          <p class="qa-desc">Tambahkan produk baru ke katalog dengan cepat dan mudah.</p>
+        </a>
+        <a href="{% url 'produk_list' %}" class="qa-card">
+          <div class="qa-icon">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+          </div>
+          <div class="qa-title">Kelola Produk</div>
+          <p class="qa-desc">Lihat, edit, dan hapus semua produk yang sudah tersimpan.</p>
+        </a>
       </div>
     </div>
   </section>
   {% endif %}
 
-  <!-- ─── CTA ─── -->
-  <section class="py-5">
-    <div class="container reveal">
-      <div class="cta-box">
-        <h2 class="cta-heading">Siap untuk memulai?</h2>
+  <!-- ── CTA ── -->
+  <section class="cta-section">
+    <div class="wrap reveal">
+      <div class="cta-inner">
+        <h2 class="cta-h2">Siap untuk memulai?</h2>
         <p class="cta-sub">
           Bergabunglah dengan ribuan bisnis yang telah meningkatkan produktivitas
-          mereka dengan platform kami.
+          mereka bersama platform Nusantara Tech.
         </p>
-        <a href="{% url 'produk_form' %}" class="btn-primary-nt">
-          Mulai Gratis Hari Ini
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
+        <div class="cta-actions">
+          <a href="{% url 'produk_form' %}" class="btn-pri">
+            Mulai Gratis Hari Ini
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#layanan" class="btn-ghost">Pelajari Lebih Lanjut</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ─── FOOTER ─── -->
+  <!-- ── FOOTER ── -->
   <footer class="nt-footer">
-    <div class="container">
-      <p style="margin: 0;">&copy; 2026 Nusantara Tech. Semua hak dilindungi.</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand-mark" style="width:22px;height:22px;border-radius:5px;">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        Nusantara Tech
+      </div>
+      <div class="footer-links">
+        <a href="#layanan">Layanan</a>
+        <a href="#katalog">Katalog</a>
+        <a href="{% url 'produk_form' %}">Produk</a>
+      </div>
+      <span class="footer-copy">&copy; 2026 Nusantara Tech. Semua hak dilindungi.</span>
     </div>
   </footer>
 
-</div><!-- .page -->
+</div>
 
 <script>
-  // Hamburger
   document.getElementById('hamburger').addEventListener('click', function () {
     document.getElementById('navLinks').classList.toggle('open');
   });
-
-  // Scroll reveal
-  var revealEls = document.querySelectorAll('.reveal');
-  var revealObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        revealObserver.unobserve(e.target);
-      }
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     });
-  }, { threshold: 0.08 });
-  revealEls.forEach(function (el) { revealObserver.observe(el); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
 </script>
 {% endblock %}

@@ -205,9 +205,9 @@ def dashboard(request):
 
         elif action == "add_supplier":
             nama = request.POST.get("nama")
-            kontak = request.POST.get("kontak")
-            telepon = request.POST.get("telepon")
-            email = request.POST.get("email")
+            kontak = request.POST.get("kontak", "") or ""
+            telepon = request.POST.get("telepon", "") or ""
+            email = request.POST.get("email", "") or ""
             if nama:
                 Supplier.objects.create(
                     nama=nama, kontak=kontak, telepon=telepon, email=email
@@ -216,9 +216,9 @@ def dashboard(request):
 
         elif action == "add_pelanggan":
             nama = request.POST.get("nama")
-            kontak = request.POST.get("kontak")
-            telepon = request.POST.get("telepon")
-            email = request.POST.get("email")
+            kontak = request.POST.get("kontak", "") or ""
+            telepon = request.POST.get("telepon", "") or ""
+            email = request.POST.get("email", "") or ""
             if nama:
                 Pelanggan.objects.create(
                     nama=nama, kontak=kontak, telepon=telepon, email=email

@@ -9,7 +9,7 @@
                 <div class="eyebrow">Produk</div>
                 <h1>Daftar Produk</h1>
             </div>
-            <a href="{% url 'produk_form' %}" class="btn btn-primary">Tambah Produk</a>
+            <a href="{% url 'produk_form' %}" class="btn-primary-nt">Tambah Produk</a>
         </div>
 
         {% if messages %}
@@ -29,10 +29,10 @@
                         <span>ID: #{{ produk.id }}</span>
                     </div>
                     <div class="produk-actions">
-                        <a href="{% url 'produk_edit' produk.pk %}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'produk_edit' produk.pk %}" class="btn">Edit</a>
                         <form method="post" action="{% url 'produk_delete' produk.pk %}" style="display: inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin hapus produk ini?')">Hapus</button>
+                            <button type="submit" class="btn" onclick="return confirm('Yakin hapus produk ini?')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%); color: #fff; border: none;">Hapus</button>
                         </form>
                     </div>
                 </div>

@@ -8,7 +8,7 @@
                 <div class="eyebrow">Edit Produk</div>
                 <h1>Edit {{ produk.nama }}</h1>
             </div>
-            <a href="{% url 'produk_list' %}" class="btn btn-secondary">Kembali ke Daftar</a>
+            <a href="{% url 'produk_list' %}" class="btn-ghost">Kembali ke Daftar</a>
         </div>
 
         {% if messages %}
@@ -19,25 +19,53 @@
             {% endfor %}
         {% endif %}
 
-        <div class="form-card fade-up delay-1">
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="{{ form.nama.id_for_label }}">Nama Produk</label>
-                    {{ form.nama }}
-                    {% if form.nama.errors %}
-                        <div class="message message-error">{{ form.nama.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.harga.id_for_label }}">Harga</label>
-                    {{ form.harga }}
-                    {% if form.harga.errors %}
-                        <div class="message message-error">{{ form.harga.errors }}</div>
-                    {% endif %}
-                </div>
-                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-            </form>
-        </div>
+         <div class="form-card fade-up delay-1">
+             <form method="post">
+                 {% csrf_token %}
+                 <div class="form-group">
+                     <label for="{{ form.nama.id_for_label }}">Nama Produk</label>
+                     {{ form.nama }}
+                     {% if form.nama.errors %}
+                         <div class="message message-error">{{ form.nama.errors }}</div>
+                     {% endif %}
+                 </div>
+                 <div class="form-group">
+                     <label for="{{ form.harga.id_for_label }}">Harga</label>
+                     {{ form.harga }}
+                     {% if form.harga.errors %}
+                         <div class="message message-error">{{ form.harga.errors }}</div>
+                     {% endif %}
+                 </div>
+                 <div class="form-group">
+                     <label for="{{ form.kategori.id_for_label }}">Kategori</label>
+                     {{ form.kategori }}
+                     {% if form.kategori.errors %}
+                         <div class="message message-error">{{ form.kategori.errors }}</div>
+                     {% endif %}
+                 </div>
+                 <div class="form-group">
+                     <label for="{{ form.supplier.id_for_label }}">Supplier</label>
+                     {{ form.supplier }}
+                     {% if form.supplier.errors %}
+                         <div class="message message-error">{{ form.supplier.errors }}</div>
+                     {% endif %}
+                 </div>
+                 <div class="form-group">
+                     <label for="{{ form.stok.id_for_label }}">Stok</label>
+                     {{ form.stok }}
+                     {% if form.stok.errors %}
+                         <div class="message message-error">{{ form.stok.errors }}</div>
+                     {% endif %}
+                 </div>
+                 <div class="form-group">
+                     <label for="{{ form.deskripsi.id_for_label }}">Deskripsi</label>
+                     {{ form.deskripsi }}
+                     {% if form.deskripsi.errors %}
+                         <div class="message message-error">{{ form.deskripsi.errors }}</div>
+                     {% endif %}
+                 </div>
+                 <button type="submit" class="btn-primary-nt">Simpan Perubahan</button>
+             </form>
+         </div>
     </div>
 {% endblock %}
