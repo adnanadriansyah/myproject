@@ -181,11 +181,12 @@ def dashboard(request):
                         username=username, password=password
                     )
                     for g_id in groups:
-                        try:
-                            group = Group.objects.get(id=g_id)
-                            group.user_set.add(user)
-                        except Group.DoesNotExist:
-                            pass
+                        if g_id:
+                            try:
+                                group = Group.objects.get(id=g_id)
+                                group.user_set.add(user)
+                            except (Group.DoesNotExist, ValueError):
+                                pass
                     messages.success(request, f"User '{username}' berhasil dibuat.")
 
         elif action == "create_group":
@@ -235,47 +236,51 @@ def dashboard(request):
                 produk = Produk.objects.create(
                     nama=nama,
                     harga=int(harga),
-                    kategori_id=kategori_id if kategori_id else None,
-                    supplier_id=supplier_id if supplier_id else None,
+                    kategori_id=int(kategori_id) if kategori_id else None,
+                    supplier_id=int(supplier_id) if supplier_id else None,
                     stok=int(stok) if stok else 0,
                 )
                 messages.success(request, f"Produk '{nama}' berhasil ditambahkan.")
 
         elif action == "delete_produk":
             produk_id = request.POST.get("produk_id")
-            try:
-                produk = Produk.objects.get(id=produk_id)
-                produk.delete()
-                messages.success(request, "Produk dihapus.")
-            except Produk.DoesNotExist:
-                pass
+            if produk_id:
+                try:
+                    produk = Produk.objects.get(id=produk_id)
+                    produk.delete()
+                    messages.success(request, "Produk dihapus.")
+                except (Produk.DoesNotExist, ValueError):
+                    pass
 
         elif action == "delete_kategori":
             kategori_id = request.POST.get("kategori_id")
-            try:
-                kategori = Kategori.objects.get(id=kategori_id)
-                kategori.delete()
-                messages.success(request, "Kategori dihapus.")
-            except Kategori.DoesNotExist:
-                pass
+            if kategori_id:
+                try:
+                    kategori = Kategori.objects.get(id=kategori_id)
+                    kategori.delete()
+                    messages.success(request, "Kategori dihapus.")
+                except (Kategori.DoesNotExist, ValueError):
+                    pass
 
         elif action == "delete_supplier":
             supplier_id = request.POST.get("supplier_id")
-            try:
-                supplier = Supplier.objects.get(id=supplier_id)
-                supplier.delete()
-                messages.success(request, "Supplier dihapus.")
-            except Supplier.DoesNotExist:
-                pass
+            if supplier_id:
+                try:
+                    supplier = Supplier.objects.get(id=supplier_id)
+                    supplier.delete()
+                    messages.success(request, "Supplier dihapus.")
+                except (Supplier.DoesNotExist, ValueError):
+                    pass
 
         elif action == "delete_pelanggan":
             pelanggan_id = request.POST.get("pelanggan_id")
-            try:
-                pelanggan = Pelanggan.objects.get(id=pelanggan_id)
-                pelanggan.delete()
-                messages.success(request, "Pelanggan dihapus.")
-            except Pelanggan.DoesNotExist:
-                pass
+            if pelanggan_id:
+                try:
+                    pelanggan = Pelanggan.objects.get(id=pelanggan_id)
+                    pelanggan.delete()
+                    messages.success(request, "Pelanggan dihapus.")
+                except (Pelanggan.DoesNotExist, ValueError):
+                    pass
 
         return redirect("dashboard")
 
@@ -295,7 +300,7 @@ def dashboard(request):
         "kategori_list": semua_kategori,
         "supplier_list": semua_supplier,
         "pelanggan_list": semua_pelanggan[:6],
-        "produk_all": semua_produk,  # untuk form tambah item di detail pesanan
+        "produk_all": semua_produk,
     }
     return render(request, "appku/dashboard.html", context)
 
@@ -356,7 +361,6 @@ def pesanan_detail(request, pk):
                 detail.subtotal = detail.harga_saat_itu * detail.quantity
                 detail.save()
                 
-                # Update total harga pesanan
                 pesanan.total_harga = sum(d.subtotal for d in pesanan.details.all())
                 pesanan.save()
                 
@@ -374,7 +378,6 @@ def pesanan_detail(request, pk):
             try:
                 detail = DetailPesanan.objects.get(id=detail_id, pesanan=pesanan)
                 detail.delete()
-                # Update total harga
                 pesanan.total_harga = sum(d.subtotal for d in pesanan.details.all())
                 pesanan.save()
                 messages.success(request, "Item dihapus dari pesanan.")
@@ -433,7 +436,6 @@ def pesanan_add_item_ajax(request, pk):
         try:
             produk = Produk.objects.get(id=produk_id)
             
-            # Cek apakah produk sudah ada di pesanan
             existing = DetailPesanan.objects.filter(pesanan=pesanan, produk=produk).first()
             if existing:
                 existing.quantity += quantity
@@ -448,7 +450,6 @@ def pesanan_add_item_ajax(request, pk):
                     subtotal=produk.harga * quantity,
                 )
             
-            # Update total harga pesanan
             pesanan.total_harga = sum(d.subtotal for d in pesanan.details.all())
             pesanan.save()
             
