@@ -1,0 +1,197 @@
+{% extends 'appku/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --nt-dark:   #060b14;
+    --nt-navy:   #0d1a2e;
+    --nt-card:   rgba(17,29,50,.65);
+    --nt-blue:   #2563eb;
+    --nt-indigo: #4f46e5;
+    --nt-cyan:   #06b6d4;
+    --nt-green:  #10b981;
+    --nt-orange: #f97316;
+    --nt-border: rgba(255,255,255,.07);
+    --nt-muted:  #64748b;
+    --nt-text:   #f1f5f9;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #060b14;
+    color: var(--nt-text);
+    min-height: 100vh;
+  }
+
+  .bg-ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .bg-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: .10; }
+  .bg-blob-1 { width: 500px; height: 500px; background: var(--nt-blue); top: -100px; left: -100px; }
+  .bg-blob-2 { width: 400px; height: 400px; background: var(--nt-indigo); bottom: -100px; right: -50px; }
+
+  .page-wrap {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .form-card {
+    width: 100%; max-width: 520px;
+    background: var(--nt-card);
+    border: 1px solid var(--nt-border);
+    border-radius: 20px;
+    backdrop-filter: blur(16px);
+    padding: 2.25rem 2.5rem;
+    animation: slideUp .45s ease both;
+  }
+
+  @keyframes slideUp { from { opacity:0; transform: translateY(20px); } }
+
+  .form-header {
+    display: flex; align-items: center; gap: .85rem;
+    margin-bottom: 2rem;
+  }
+  .form-icon {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px rgba(37,99,235,.3);
+  }
+  .form-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem; font-weight: 800;
+    letter-spacing: -.02em;
+    margin: 0;
+  }
+  .form-subtitle { font-size: .75rem; color: var(--nt-muted); margin-top: .1rem; }
+
+  .field-wrap { margin-bottom: 1.25rem; }
+  .field-label {
+    display: block; font-size: .72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .07em;
+    color: var(--nt-muted); margin-bottom: .45rem;
+  }
+
+  .field-wrap select,
+  .field-wrap input {
+    width: 100%;
+    background: rgba(255,255,255,.05) !important;
+    border: 1px solid rgba(255,255,255,.09) !important;
+    border-radius: 10px !important;
+    color: var(--nt-text) !important;
+    font-size: .85rem; padding: .6rem .85rem;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+  }
+  .field-wrap select:focus,
+  .field-wrap input:focus {
+    border-color: var(--nt-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.15) !important;
+  }
+  .field-wrap select option { background: #0d1a2e; color: var(--nt-text); }
+
+  .divider { height: 1px; background: var(--nt-border); margin: 1.5rem 0; }
+
+  .btn-row { display: flex; gap: .75rem; }
+
+  .btn-primary-nt {
+    flex: 1; padding: .65rem 1.25rem; border-radius: 10px; border: none;
+    background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
+    color: #fff; font-size: .85rem; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    display: flex; align-items: center; justify-content: center; gap: .4rem;
+  }
+  .btn-primary-nt:hover { opacity: .87; transform: translateY(-1px); }
+  .btn-primary-nt:active { transform: translateY(0); }
+
+  .btn-ghost {
+    padding: .65rem 1.25rem; border-radius: 10px;
+    background: rgba(255,255,255,.05); border: 1px solid var(--nt-border);
+    color: var(--nt-muted); font-size: .85rem; font-weight: 500;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    text-decoration: none; display: flex; align-items: center; gap: .4rem;
+    transition: background .2s, color .2s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.09); color: var(--nt-text); }
+
+  .breadcrumb-bar {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .75rem; color: var(--nt-muted);
+    margin-bottom: .75rem;
+  }
+  .breadcrumb-bar a { color: var(--nt-muted); text-decoration: none; transition: color .2s; }
+  .breadcrumb-bar a:hover { color: var(--nt-text); }
+  .breadcrumb-sep { opacity: .4; }
+</style>
+
+<div class="bg-ambient">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+</div>
+
+<div class="page-wrap">
+  <div class="form-card">
+
+    <div class="breadcrumb-bar">
+      <a href="{% url 'pesanan_list' %}">Pesanan</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>{{ title }}</span>
+    </div>
+
+    <div class="form-header">
+      <div class="form-icon">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </div>
+      <div>
+        <div class="form-title">{{ title }}</div>
+        <div class="form-subtitle">Isi data pesanan dengan lengkap</div>
+      </div>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="field-wrap">
+        {{ form.pelanggan.label_tag }}
+        {{ form.pelanggan }}
+        {% if form.pelanggan.errors %}
+          <div style="font-size:.72rem;color:#fca5a5;margin-top:.3rem;">{{ form.pelanggan.errors }}</div>
+        {% endif %}
+      </div>
+
+      {% if form.status %}
+      <div class="field-wrap">
+        {{ form.status.label_tag }}
+        {{ form.status }}
+        {% if form.status.errors %}
+          <div style="font-size:.72rem;color:#fca5a5;margin-top:.3rem;">{{ form.status.errors }}</div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="divider"></div>
+
+      <div class="btn-row">
+        <button type="submit" class="btn-primary-nt">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Simpan
+        </button>
+        <a href="{% url 'pesanan_list' %}" class="btn-ghost">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Batal
+        </a>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

@@ -341,10 +341,19 @@
       Beranda
     </a>
 
+    <div class="nav-section-label" style="margin-top:1rem;">Penjualan</div>
+    <a href="{% url 'pesanan_list' %}" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Pesanan
+    </a>
     <div class="nav-section-label" style="margin-top:1rem;">Kelola</div>
     <a href="#" class="sidebar-link">
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Pelanggan
+    </a>
+    <a href="#" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><polyline points="22 21 22 15 19 12 22 15 19 18"/></svg>
+      Supplier
     </a>
     <a href="#" class="sidebar-link">
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="22 21 22 15"/><polyline points="19 12 22 15 19 18"/></svg>
@@ -374,17 +383,25 @@
       <div>
         <div class="topbar-title">Dashboard</div>
         <div style="font-size:.78rem;color:var(--nt-muted);margin-top:.15rem;">Selamat datang kembali, {{ user.username }}</div>
-      </div>
-      <div class="topbar-right">
-        <a href="{% url 'home' %}" class="btn-topbar">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-          Beranda
-        </a>
-        <a href="{% url 'logout' %}" class="btn-topbar" style="color:#fca5a5;border-color:rgba(239,68,68,.2);">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Logout
-        </a>
-      </div>
+       </div>
+       <div class="topbar-right">
+         <a href="{% url 'pesanan_create' %}" class="btn-topbar" style="border-color:rgba(16,185,129,.3);color:#6ee7b7;">
+           <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+           Pesanan Baru
+         </a>
+         <a href="{% url 'pesanan_list' %}" class="btn-topbar">
+           <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+           Daftar Pesanan
+         </a>
+         <a href="{% url 'home' %}" class="btn-topbar">
+           <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+           Beranda
+         </a>
+         <a href="{% url 'logout' %}" class="btn-topbar" style="color:#fca5a5;border-color:rgba(239,68,68,.2);">
+           <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+           Logout
+         </a>
+       </div>
     </div>
 
     <!-- MESSAGES -->

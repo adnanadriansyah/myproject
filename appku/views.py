@@ -11,7 +11,7 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.models import Group
 from django.contrib import messages
-from .forms import ProdukForm, KategoriForm, SupplierForm, PelangganForm
+from .forms import ProdukForm, KategoriForm, SupplierForm, PelangganForm, PesananForm, DetailPesananForm
 from .models import Produk, Kategori, Supplier, Pelanggan, Pesanan, DetailPesanan
 
 
@@ -295,6 +295,7 @@ def dashboard(request):
         "kategori_list": semua_kategori,
         "supplier_list": semua_supplier,
         "pelanggan_list": semua_pelanggan[:6],
+        "produk_all": semua_produk,  # untuk form tambah item di detail pesanan
     }
     return render(request, "appku/dashboard.html", context)
 
@@ -315,3 +316,149 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect("home")
+
+
+@login_required
+def pesanan_create(request):
+    if request.method == "POST":
+        form = PesananForm(request.POST)
+        if form.is_valid():
+            pesanan = form.save(commit=False)
+            pesanan.user = request.user
+            pesanan.total_harga = 0
+            pesanan.save()
+            messages.success(request, "Pesanan berhasil dibuat. Silakan tambahkan produk.")
+            return redirect("pesanan_detail", pk=pesanan.id)
+    else:
+        form = PesananForm()
+    return render(request, "appku/pesanan_form.html", {"form": form, "title": "Buat Pesanan"})
+
+
+@login_required
+def pesanan_list(request):
+    pesanans = Pesanan.objects.all().order_by("-id")
+    return render(request, "appku/pesanan_list.html", {"pesanans": pesanans})
+
+
+@login_required
+def pesanan_detail(request, pk):
+    pesanan = get_object_or_404(Pesanan, pk=pk)
+    details = pesanan.details.all().select_related("produk")
+    
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "add_detail":
+            form = DetailPesananForm(request.POST)
+            if form.is_valid():
+                detail = form.save(commit=False)
+                detail.pesanan = pesanan
+                detail.harga_saat_itu = detail.produk.harga
+                detail.subtotal = detail.harga_saat_itu * detail.quantity
+                detail.save()
+                
+                # Update total harga pesanan
+                pesanan.total_harga = sum(d.subtotal for d in pesanan.details.all())
+                pesanan.save()
+                
+                messages.success(request, f"Produk {detail.produk.nama} ditambahkan ke pesanan.")
+                return redirect("pesanan_detail", pk=pk)
+        elif action == "update_status":
+            status = request.POST.get("status")
+            if status in dict(Pesanan.STATUS_CHOICES):
+                pesanan.status = status
+                pesanan.save()
+                messages.success(request, f"Status pesanan diubah menjadi {pesanan.get_status_display()}.")
+                return redirect("pesanan_detail", pk=pk)
+        elif action == "delete_detail":
+            detail_id = request.POST.get("detail_id")
+            try:
+                detail = DetailPesanan.objects.get(id=detail_id, pesanan=pesanan)
+                detail.delete()
+                # Update total harga
+                pesanan.total_harga = sum(d.subtotal for d in pesanan.details.all())
+                pesanan.save()
+                messages.success(request, "Item dihapus dari pesanan.")
+            except DetailPesanan.DoesNotExist:
+                messages.error(request, "Item tidak ditemukan.")
+    else:
+        form = DetailPesananForm()
+    
+    context = {
+        "pesanan": pesanan,
+        "details": details,
+        "form": form,
+        "status_list": Pesanan.STATUS_CHOICES,
+        "produk_all": Produk.objects.all(),
+    }
+    return render(request, "appku/pesanan_detail.html", context)
+
+
+@login_required
+def pesanan_update(request, pk):
+    pesanan = get_object_or_404(Pesanan, pk=pk)
+    if request.method == "POST":
+        form = PesananForm(request.POST, instance=pesanan)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pesanan berhasil diperbarui.")
+            return redirect("pesanan_list")
+    else:
+        form = PesananForm(instance=pesanan)
+    return render(request, "appku/pesanan_form.html", {"form": form, "title": "Edit Pesanan"})
+
+
+@login_required
+def pesanan_delete(request, pk):
+    pesanan = get_object_or_404(Pesanan, pk=pk)
+    if request.method == "POST":
+        pesanan.delete()
+        messages.success(request, "Pesanan berhasil dihapus.")
+        return redirect("pesanan_list")
+    details_count = pesanan.details.count()
+    return render(request, "appku/pesanan_confirm_delete.html", {
+        "pesanan": pesanan,
+        "details_count": details_count,
+    })
+
+
+@login_required
+def pesanan_add_item_ajax(request, pk):
+    """Tambahkan item ke pesanan via AJAX"""
+    pesanan = get_object_or_404(Pesanan, pk=pk)
+    
+    if request.method == "POST" and request.headers.get("x-requested-with") == "XMLHttpRequest":
+        produk_id = request.POST.get("produk_id")
+        quantity = int(request.POST.get("quantity", 1))
+        
+        try:
+            produk = Produk.objects.get(id=produk_id)
+            
+            # Cek apakah produk sudah ada di pesanan
+            existing = DetailPesanan.objects.filter(pesanan=pesanan, produk=produk).first()
+            if existing:
+                existing.quantity += quantity
+                existing.subtotal = existing.harga_saat_itu * existing.quantity
+                existing.save()
+            else:
+                DetailPesanan.objects.create(
+                    pesanan=pesanan,
+                    produk=produk,
+                    quantity=quantity,
+                    harga_saat_itu=produk.harga,
+                    subtotal=produk.harga * quantity,
+                )
+            
+            # Update total harga pesanan
+            pesanan.total_harga = sum(d.subtotal for d in pesanan.details.all())
+            pesanan.save()
+            
+            return JsonResponse({
+                "success": True,
+                "message": f"{produk.nama} ditambahkan ke pesanan.",
+                "total_harga": pesanan.total_harga,
+                "item_count": pesanan.details.count(),
+            })
+        except Produk.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Produk tidak ditemukan."}, status=404)
+    
+    return JsonResponse({"success": False, "error": "Request tidak valid."}, status=400)

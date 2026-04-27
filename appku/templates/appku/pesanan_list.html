@@ -1,0 +1,265 @@
+{% extends 'appku/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --nt-dark:   #060b14;
+    --nt-card:   rgba(17,29,50,.65);
+    --nt-blue:   #2563eb;
+    --nt-indigo: #4f46e5;
+    --nt-cyan:   #06b6d4;
+    --nt-green:  #10b981;
+    --nt-orange: #f97316;
+    --nt-border: rgba(255,255,255,.07);
+    --nt-muted:  #64748b;
+    --nt-text:   #f1f5f9;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #060b14;
+    color: var(--nt-text);
+    min-height: 100vh;
+  }
+
+  .bg-ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .bg-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: .09; }
+  .bg-blob-1 { width: 600px; height: 600px; background: var(--nt-blue); top: -150px; left: -150px; }
+  .bg-blob-2 { width: 450px; height: 450px; background: var(--nt-indigo); bottom: -100px; right: -50px; }
+
+  .page-wrap { position: relative; z-index: 1; padding: 2rem 2rem; min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .topbar-left .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; margin: 0;
+  }
+  .topbar-left .page-sub { font-size: .75rem; color: var(--nt-muted); margin-top: .15rem; }
+
+  .btn-new {
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .55rem 1.1rem; border-radius: 10px; border: none;
+    background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
+    color: #fff; font-size: .82rem; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(37,99,235,.3);
+    transition: opacity .2s, transform .15s;
+  }
+  .btn-new:hover { opacity: .87; transform: translateY(-1px); color: #fff; }
+
+  /* TABLE CARD */
+  .table-card {
+    background: var(--nt-card);
+    border: 1px solid var(--nt-border);
+    border-radius: 18px;
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    animation: fadeIn .45s ease both;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } }
+
+  .table-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--nt-border);
+    flex-wrap: wrap; gap: .75rem;
+  }
+  .table-header-title {
+    font-family: 'Syne', sans-serif;
+    font-size: .95rem; font-weight: 700;
+  }
+  .table-count {
+    font-size: .72rem; padding: .25rem .65rem; border-radius: 20px;
+    background: rgba(37,99,235,.12); border: 1px solid rgba(37,99,235,.2);
+    color: #93c5fd;
+  }
+
+  table.nt-table { width: 100%; border-collapse: collapse; }
+  table.nt-table thead tr {
+    border-bottom: 1px solid var(--nt-border);
+  }
+  table.nt-table thead th {
+    padding: .75rem 1.5rem;
+    font-size: .65rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .09em;
+    color: var(--nt-muted); white-space: nowrap;
+  }
+  table.nt-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,.03);
+    transition: background .15s;
+  }
+  table.nt-table tbody tr:last-child { border-bottom: none; }
+  table.nt-table tbody tr:hover { background: rgba(255,255,255,.02); }
+  table.nt-table td {
+    padding: .9rem 1.5rem;
+    font-size: .83rem; vertical-align: middle;
+  }
+
+  /* ID badge */
+  .order-id {
+    display: inline-flex; align-items: center;
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: .8rem; color: #60a5fa;
+    background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.18);
+    padding: .2rem .55rem; border-radius: 6px;
+  }
+
+  /* Avatar customer */
+  .customer-cell { display: flex; align-items: center; gap: .6rem; }
+  .cust-av {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(16,185,129,.3), rgba(6,182,212,.2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: .62rem; font-weight: 700; color: #6ee7b7;
+  }
+  .cust-name { font-weight: 500; font-size: .83rem; }
+
+  /* Status badges */
+  .badge-status {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .22rem .65rem; border-radius: 20px;
+    font-size: .68rem; font-weight: 600; white-space: nowrap;
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .badge-pending  { background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.25); color: #fde68a; }
+  .badge-pending .badge-dot { background: #fbbf24; }
+  .badge-processing { background: rgba(6,182,212,.12); border: 1px solid rgba(6,182,212,.25); color: #67e8f9; }
+  .badge-processing .badge-dot { background: #06b6d4; box-shadow: 0 0 6px #06b6d4; animation: pulse 1.5s infinite; }
+  .badge-completed { background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.25); color: #6ee7b7; }
+  .badge-completed .badge-dot { background: #10b981; }
+  .badge-cancelled { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; }
+  .badge-cancelled .badge-dot { background: #ef4444; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+  /* Total */
+  .total-val { font-family: 'Syne', sans-serif; font-weight: 700; color: #6ee7b7; }
+
+  /* Action buttons */
+  .action-group { display: flex; gap: .35rem; }
+  .btn-act {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .28rem .6rem; border-radius: 7px; font-size: .68rem;
+    font-weight: 600; text-decoration: none; border: 1px solid transparent;
+    transition: background .2s, border-color .2s, color .2s;
+    white-space: nowrap;
+  }
+  .btn-detail  { background: rgba(6,182,212,.1); border-color: rgba(6,182,212,.2); color: #67e8f9; }
+  .btn-detail:hover { background: rgba(6,182,212,.18); color: #67e8f9; }
+  .btn-edit    { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); color: #fde68a; }
+  .btn-edit:hover { background: rgba(251,191,36,.18); color: #fde68a; }
+  .btn-delete  { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.2); color: #fca5a5; }
+  .btn-delete:hover { background: rgba(239,68,68,.18); color: #fca5a5; }
+
+  /* Empty */
+  .empty-row td {
+    text-align: center; padding: 3.5rem 1rem;
+    color: var(--nt-muted); font-size: .83rem;
+  }
+  .empty-icon { font-size: 2.5rem; display: block; margin-bottom: .75rem; opacity: .35; }
+
+  /* Responsive scroll */
+  .table-scroll { overflow-x: auto; }
+  .table-scroll::-webkit-scrollbar { height: 4px; }
+  .table-scroll::-webkit-scrollbar-track { background: transparent; }
+  .table-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+</style>
+
+<div class="bg-ambient">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+</div>
+
+<div class="page-wrap">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="page-title">Daftar Pesanan</div>
+      <div class="page-sub">Kelola semua transaksi penjualan</div>
+    </div>
+    <a href="{% url 'pesanan_create' %}" class="btn-new">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Buat Pesanan Baru
+    </a>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-header-title">Semua Pesanan</div>
+      <span class="table-count">{{ pesanans|length }} pesanan</span>
+    </div>
+
+    <div class="table-scroll">
+      <table class="nt-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pelanggan</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in pesanans %}
+          <tr>
+            <td><span class="order-id">#{{ p.id }}</span></td>
+            <td>
+              <div class="customer-cell">
+                <div class="cust-av">{{ p.pelanggan.nama|upper|slice:2 }}</div>
+                <span class="cust-name">{{ p.pelanggan.nama }}</span>
+              </div>
+            </td>
+            <td style="color:var(--nt-muted);">{{ p.user.username }}</td>
+            <td>
+              {% if p.status == 'pending' %}
+                <span class="badge-status badge-pending"><span class="badge-dot"></span>{{ p.get_status_display }}</span>
+              {% elif p.status == 'processing' %}
+                <span class="badge-status badge-processing"><span class="badge-dot"></span>{{ p.get_status_display }}</span>
+              {% elif p.status == 'completed' %}
+                <span class="badge-status badge-completed"><span class="badge-dot"></span>{{ p.get_status_display }}</span>
+              {% else %}
+                <span class="badge-status badge-cancelled"><span class="badge-dot"></span>{{ p.get_status_display }}</span>
+              {% endif %}
+            </td>
+            <td><span class="total-val">Rp {{ p.total_harga|floatformat:0 }}</span></td>
+            <td>
+              <div class="action-group">
+                <a href="{% url 'pesanan_detail' pk=p.id %}" class="btn-act btn-detail">
+                  <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Detail
+                </a>
+                <a href="{% url 'pesanan_update' pk=p.id %}" class="btn-act btn-edit">
+                  <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  Edit
+                </a>
+                <a href="{% url 'pesanan_delete' pk=p.id %}" class="btn-act btn-delete">
+                  <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                  Hapus
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr class="empty-row">
+            <td colspan="6">
+              <span class="empty-icon">🛒</span>
+              Belum ada pesanan. <a href="{% url 'pesanan_create' %}" style="color:#60a5fa;">Buat pesanan pertama</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

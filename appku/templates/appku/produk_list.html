@@ -1,44 +1,419 @@
 {% extends 'appku/base.html' %}
 {% block title %}Daftar Produk | Nusantara Tech{% endblock %}
 {% load humanize %}
+{% load static %}
 
 {% block content %}
-    <div class="container">
-        <div class="page-header fade-up">
-            <div>
-                <div class="eyebrow">Produk</div>
-                <h1>Daftar Produk</h1>
-            </div>
-            <a href="{% url 'produk_form' %}" class="btn-primary-nt">Tambah Produk</a>
-        </div>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message {% if message.tags == 'error' %}message-error{% else %}message-success{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+  :root {
+    --nt-dark:   #060b14;
+    --nt-navy:   #0d1a2e;
+    --nt-card:   rgba(17,29,50,.65);
+    --nt-blue:   #2563eb;
+    --nt-indigo: #4f46e5;
+    --nt-cyan:   #06b6d4;
+    --nt-green:  #10b981;
+    --nt-orange: #f97316;
+    --nt-purple: #8b5cf6;
+    --nt-pink:   #ec4899;
+    --nt-border: rgba(255,255,255,.07);
+    --nt-muted:  #64748b;
+    --nt-text:   #f1f5f9;
+  }
 
-        <div class="produk-grid">
-            {% for produk in produk_list %}
-                <div class="produk-card fade-up delay-1">
-                    <h3>{{ produk.nama }}</h3>
-                    <p class="produk-price">Rp {{ produk.harga|intcomma }}</p>
-                    <div class="produk-meta">
-                        <span>ID: #{{ produk.id }}</span>
-                    </div>
-                    <div class="produk-actions">
-                        <a href="{% url 'produk_edit' produk.pk %}" class="btn">Edit</a>
-                        <form method="post" action="{% url 'produk_delete' produk.pk %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn" onclick="return confirm('Yakin hapus produk ini?')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%); color: #fff; border: none;">Hapus</button>
-                        </form>
-                    </div>
-                </div>
-            {% empty %}
-                <p>Belum ada produk.</p>
-            {% endfor %}
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #060b14;
+    color: var(--nt-text);
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  /* BG AMBIENT */
+  .bg-ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .bg-blob { position: absolute; border-radius: 50%; filter: blur(110px); opacity: .09; }
+  .bg-blob-1 { width: 560px; height: 560px; background: var(--nt-blue); top: -130px; left: -100px; }
+  .bg-blob-2 { width: 420px; height: 420px; background: var(--nt-indigo); bottom: -100px; right: -60px; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: rgba(13,26,46,.85);
+    border-right: 1px solid var(--nt-border);
+    backdrop-filter: blur(20px);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    padding: 1.5rem 1rem;
+    transition: transform .3s;
+    z-index: 200;
+  }
+  .sidebar-brand {
+    display: flex; align-items: center; gap: .6rem;
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 1.05rem; color: var(--nt-text);
+    margin-bottom: 2rem; padding: 0 .5rem;
+    text-decoration: none;
+  }
+  .sidebar-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--nt-blue); box-shadow: 0 0 8px var(--nt-blue);
+  }
+  .nav-section-label {
+    font-size: .63rem; font-weight: 600; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--nt-muted);
+    padding: 0 .5rem; margin: .75rem 0 .4rem;
+  }
+  .sidebar-link {
+    display: flex; align-items: center; gap: .65rem;
+    padding: .5rem .65rem; border-radius: 8px;
+    color: var(--nt-muted) !important; text-decoration: none;
+    font-size: .85rem; font-weight: 500;
+    transition: background .2s, color .2s;
+    margin-bottom: 2px;
+  }
+  .sidebar-link:hover { background: rgba(37,99,235,.12); color: var(--nt-text) !important; }
+  .sidebar-link.active { background: rgba(37,99,235,.14); color: #93c5fd !important; }
+  .sidebar-link svg { flex-shrink: 0; }
+  .sidebar-footer { margin-top: auto; border-top: 1px solid var(--nt-border); padding-top: 1rem; }
+  .user-chip { display: flex; align-items: center; gap: .65rem; padding: .5rem; }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--nt-blue), var(--nt-indigo));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .7rem; flex-shrink: 0;
+  }
+  .user-name { font-size: .82rem; font-weight: 500; }
+  .user-role { font-size: .7rem; color: var(--nt-muted); }
+
+  /* LAYOUT WRAP */
+  .dashboard-wrap { position: relative; z-index: 1; display: flex; }
+  .main-content {
+    margin-left: 220px;
+    padding: 1.75rem 2rem;
+    min-height: 100vh;
+    flex: 1;
+    animation: fadeIn .4s ease both;
+  }
+  @keyframes fadeIn { from { opacity:0; } }
+  @keyframes slideUp { from { opacity:0; transform:translateY(14px); } }
+
+  /* TOPBAR */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .topbar-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
+  .topbar-sub { font-size: .75rem; color: var(--nt-muted); margin-top: .15rem; }
+  .topbar-right { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; }
+  .btn-topbar {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .45rem .9rem; border-radius: 8px;
+    background: rgba(255,255,255,.05); border: 1px solid var(--nt-border);
+    color: var(--nt-muted); font-size: .78rem; cursor: pointer;
+    text-decoration: none; transition: background .2s, color .2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-topbar:hover { background: rgba(255,255,255,.1); color: var(--nt-text); }
+
+  /* ALERTS */
+  .alert-nt {
+    border-radius: 10px; padding: .7rem 1rem;
+    font-size: .82rem; display: flex; align-items: center; gap: .5rem;
+    margin-bottom: .6rem; animation: slideUp .3s ease both;
+  }
+  .alert-error   { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; }
+  .alert-success { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); color: #6ee7b7; }
+
+  /* TABLE CARD */
+  .table-card {
+    background: var(--nt-card);
+    border: 1px solid var(--nt-border);
+    border-radius: 18px; backdrop-filter: blur(16px);
+    overflow: hidden;
+    animation: slideUp .4s ease both;
+  }
+  .table-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--nt-border);
+    flex-wrap: wrap; gap: .75rem;
+  }
+  .table-card-title { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; }
+  .count-pill {
+    font-size: .7rem; padding: .22rem .65rem; border-radius: 20px;
+    background: rgba(37,99,235,.12); border: 1px solid rgba(37,99,235,.2); color: #93c5fd;
+  }
+
+  /* PRODUK GRID */
+  .produk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+  }
+  .produk-card {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--nt-border);
+    border-radius: 14px; padding: 1.1rem;
+    transition: border-color .25s, transform .25s;
+    animation: slideUp .4s ease both;
+    position: relative; overflow: hidden;
+  }
+  .produk-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--nt-blue), var(--nt-indigo));
+    opacity: 0; transition: opacity .25s;
+  }
+  .produk-card:hover { border-color: rgba(37,99,235,.3); transform: translateY(-3px); }
+  .produk-card:hover::before { opacity: 1; }
+
+  .produk-icon {
+    width: 36px; height: 36px; border-radius: 9px; margin-bottom: .75rem;
+    background: linear-gradient(135deg, rgba(37,99,235,.2), rgba(79,70,229,.15));
+    border: 1px solid rgba(37,99,235,.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; font-weight: 700; color: #93c5fd;
+    font-family: 'Syne', sans-serif;
+  }
+  .produk-nama { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .88rem; margin-bottom: .3rem; line-height: 1.3; }
+  .produk-harga { color: #60a5fa; font-weight: 700; font-size: .85rem; margin-bottom: .25rem; }
+  .produk-meta { font-size: .7rem; color: var(--nt-muted); margin-bottom: .65rem; }
+  .produk-actions { display: flex; gap: .4rem; }
+
+  .btn-edit-p {
+    flex: 1; padding: .3rem .5rem; border-radius: 7px; text-align: center;
+    background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.18);
+    color: #fde68a; font-size: .68rem; font-weight: 600; text-decoration: none;
+    transition: background .2s; display: flex; align-items: center; justify-content: center; gap: .25rem;
+  }
+  .btn-edit-p:hover { background: rgba(251,191,36,.15); color: #fde68a; }
+
+  .btn-del-p {
+    padding: .3rem .55rem; border-radius: 7px; border: none;
+    background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.18);
+    color: #fca5a5; font-size: .68rem; font-weight: 600; cursor: pointer;
+    transition: background .2s; display: flex; align-items: center; gap: .25rem;
+  }
+  .btn-del-p:hover { background: rgba(239,68,68,.16); }
+
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--nt-muted); }
+  .empty-state svg { opacity: .25; margin-bottom: .75rem; }
+  .empty-state p { font-size: .83rem; margin: 0; }
+  .empty-state a { color: #60a5fa; text-decoration: none; }
+
+  /* SEARCH BAR */
+  .search-bar {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .4rem .75rem;
+    background: rgba(255,255,255,.05); border: 1px solid var(--nt-border);
+    border-radius: 9px;
+  }
+  .search-bar svg { color: var(--nt-muted); flex-shrink: 0; }
+  .search-bar input {
+    background: none; border: none; outline: none;
+    color: var(--nt-text); font-size: .78rem;
+    font-family: 'DM Sans', sans-serif;
+    width: 160px;
+  }
+  .search-bar input::placeholder { color: var(--nt-muted); }
+
+  /* STAGGER */
+  .produk-card:nth-child(1) { animation-delay:.04s; }
+  .produk-card:nth-child(2) { animation-delay:.08s; }
+  .produk-card:nth-child(3) { animation-delay:.12s; }
+  .produk-card:nth-child(4) { animation-delay:.16s; }
+  .produk-card:nth-child(5) { animation-delay:.2s; }
+  .produk-card:nth-child(6) { animation-delay:.24s; }
+  .produk-card:nth-child(n+7) { animation-delay:.28s; }
+
+  /* MOBILE */
+  .sidebar-toggle {
+    display: none; position: fixed; bottom: 1.25rem; right: 1.25rem;
+    z-index: 300; width: 48px; height: 48px; border-radius: 50%;
+    background: var(--nt-blue); border: none; cursor: pointer;
+    align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px rgba(37,99,235,.4);
+  }
+  @media (max-width: 991px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; padding: 1.25rem 1rem; }
+    .sidebar-toggle { display: flex; }
+    .produk-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  }
+</style>
+
+<div class="bg-ambient">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+</div>
+
+<div class="dashboard-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a href="{% url 'home' %}" class="sidebar-brand">
+      <span class="sidebar-dot"></span>
+      Nusantara Tech
+    </a>
+
+    <div class="nav-section-label">Utama</div>
+    <a href="{% url 'dashboard' %}" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="{% url 'produk_list' %}" class="sidebar-link active">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Produk
+    </a>
+    <a href="{% url 'home' %}" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Beranda
+    </a>
+
+    <div class="nav-section-label" style="margin-top:1rem;">Penjualan</div>
+    <a href="{% url 'pesanan_list' %}" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Pesanan
+    </a>
+    <div class="nav-section-label" style="margin-top:1rem;">Kelola</div>
+    <a href="#" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Pelanggan
+    </a>
+    <a href="#" class="sidebar-link">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><polyline points="22 21 22 15 19 12 22 15 19 18"/></svg>
+      Supplier
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">{{ user.username|upper|slice:2 }}</div>
+        <div>
+          <div class="user-name">{{ user.username }}</div>
+          <div class="user-role">Administrator</div>
         </div>
+      </div>
+      <a href="{% url 'logout' %}" class="sidebar-link mt-1" style="color:#fca5a5!important;">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </a>
     </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Daftar Produk</div>
+        <div class="topbar-sub">Kelola semua produk dalam katalog</div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-bar">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Cari produk...">
+        </div>
+        <a href="{% url 'produk_form' %}" class="btn-topbar" style="border-color:rgba(16,185,129,.3);color:#6ee7b7;">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambah Produk
+        </a>
+        <a href="{% url 'dashboard' %}" class="btn-topbar">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="{% url 'logout' %}" class="btn-topbar" style="color:#fca5a5;border-color:rgba(239,68,68,.2);">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+    <div style="margin-bottom:1rem;">
+      {% for message in messages %}
+      <div class="alert-nt {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- TABLE CARD -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <div class="table-card-title">Semua Produk</div>
+        <span class="count-pill">{{ produk_list|length }} produk</span>
+      </div>
+
+      {% if produk_list %}
+      <div class="produk-grid" id="produkGrid">
+        {% for produk in produk_list %}
+        <div class="produk-card" data-nama="{{ produk.nama|lower }}">
+          <div class="produk-icon">{{ produk.nama|upper|slice:2 }}</div>
+          <div class="produk-nama">{{ produk.nama }}</div>
+          <div class="produk-harga">Rp {{ produk.harga|intcomma }}</div>
+          <div class="produk-meta">
+            Stok: {{ produk.stok }}
+            {% if produk.kategori %} · {{ produk.kategori }}{% endif %}
+          </div>
+          <div class="produk-actions">
+            <a href="{% url 'produk_edit' produk.pk %}" class="btn-edit-p">
+              <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </a>
+            <form method="post" action="{% url 'produk_delete' produk.pk %}" style="display:inline;" onsubmit="return confirm('Hapus produk ini?')">
+              {% csrf_token %}
+              <button type="submit" class="btn-del-p">
+                <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                Hapus
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" display="block" style="margin:0 auto .75rem;opacity:.25;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <p>Belum ada produk. <a href="{% url 'produk_form' %}">Tambah produk pertama</a></p>
+      </div>
+      {% endif %}
+    </div>
+
+  </main>
+</div>
+
+<!-- Sidebar toggle -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<script>
+  const sidebar = document.getElementById('sidebar');
+  document.getElementById('sidebarToggle').addEventListener('click', () => sidebar.classList.toggle('open'));
+  document.addEventListener('click', e => {
+    if (window.innerWidth < 992 && sidebar.classList.contains('open')
+        && !sidebar.contains(e.target)
+        && !document.getElementById('sidebarToggle').contains(e.target)) {
+      sidebar.classList.remove('open');
+    }
+  });
+
+  // Live search
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const q = this.value.toLowerCase();
+      document.querySelectorAll('.produk-card').forEach(card => {
+        card.style.display = card.dataset.nama.includes(q) ? '' : 'none';
+      });
+    });
+  }
+</script>
 {% endblock %}
