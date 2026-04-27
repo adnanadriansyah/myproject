@@ -48,7 +48,7 @@ def produk_form(request):
             produk = form.save()
             request.session["last_produk"] = {
                 "nama": produk.nama,
-                "harga": produk.harga,
+                "harga": str(produk.harga),
             }
             request.session["produk_count"] = produk_count + 1
 
